@@ -1,21 +1,23 @@
-// trait AddTrait {
-//     fn usage(&self) -> String;
-//     fn new(args: &[String]) -> Self;
-//     fn run(&self);
-// }
-
 #[derive(Debug)]
 pub struct Add {
     options: Vec<String>,
     argument: Vec<String>,
 }
 
-impl Add {
-    pub fn usage(&self) -> String {
-        format!("add {:?}", self.argument)
+pub trait SubCommand {
+    fn usage_message(&self) -> String;
+
+    fn new(args: &[String]) -> Self;
+
+    fn run(&self) -> Result<(), i32>;
+}
+
+impl SubCommand for Add {
+    fn usage_message(&self) -> String {
+        return format!("Usage: rlt add [-A|--all] [--chmod=(+|-)x] [-u|--update] <path-spec>\n");
     }
 
-    pub fn new(args: &[String]) -> Self {
+    fn new(args: &[String]) -> Self {
         let mut options = Vec::new();
         let mut argument = Vec::new();
         for arg in args {
@@ -25,11 +27,15 @@ impl Add {
                 argument.push(arg.to_string());
             }
         }
-        Add { options, argument }
+        return Add { options, argument };
     }
 
-    pub fn run(&self) {
+    fn run(&self) -> Result<(), i32> {
         println!("add {:?}", self.argument);
+        if self.argument.len() == 0 {
+            return Err(1);
+        }
+        return Ok(());
     }
 }
 

@@ -1,45 +1,31 @@
-mod add;
-use std::collections::HashMap;
+use add::SubCommand;
 
-fn usage() {
-    eprintln!(
-        "Usage: {}\n",
-        std::env::args().nth(0).unwrap().split('/').last().unwrap()
+mod add;
+
+fn usage_message() -> String {
+    return format!(
+        "Usage: rlt <subcommand> [options] [args]\n{}",
+        "\tadd [options] <filename>|<directory>\n"
     );
-    eprintln!("\tadd <filename>|<directory>");
-    // eprintln!("\tcat-file <type> <object>");
 }
 
-fn main() {
-    let args: Vec<String> = std::env::args().collect();
+fn error(message: &str) -> i32 {
+    eprintln!("{}", message);
+    return 1;
+}
 
+fn main() -> Result<(), i32> {
+    let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
-        usage();
-        std::process::exit(1);
+        return Err(error(&usage_message()));
     }
-    // args.iter().for_each(|arg| println!("{}", arg));
 
     let command = &args[1];
     match command.as_str() {
         "add" => {
             let add = add::Add::new(&args.get(2..).expect("no argument"));
-            add.run();
+            return add.run();
         }
-        _ => usage(),
+        _ => return Err(error(&usage_message())),
     }
-
-    let teams = vec![
-        String::from("Blue"),
-        String::from("Yellow"),
-        String::from("Yellow"),
-        String::from("Yellow"),
-        String::from("Yellow"),
-        "asd".to_string(),
-        "dsa".to_string(),
-    ];
-    let initial_scores = vec![10, 50, 42, 42, 42, 42, 42, 42];
-
-    let scores: HashMap<_, _> = teams.iter().zip(initial_scores.iter()).collect();
-    println!("{:?}", scores);
-    ()
 }
