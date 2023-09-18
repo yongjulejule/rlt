@@ -1,0 +1,193 @@
+{
+  "main": {
+    "id": "5db0394612f71825",
+    "type": "split",
+    "children": [
+      {
+        "id": "f1d499a7cfe549df",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a49be0935a00592a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/git.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "1bcb1d68781c54eb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/git.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "1b76ddc28e57dce9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/add.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "cd0dce7139accaa0",
+    "type": "split",
+    "children": [
+      {
+        "id": "28e1ce286730edfa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "12694e4f76f5546b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "e29ca47ae8da6f30",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "f97bad9e54e5e514",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "bc8f0714ba29c72c",
+    "type": "split",
+    "children": [
+      {
+        "id": "c75e7cc1b5bb4549",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d9423045a3d0bf8e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "docs/add.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "cb315aa2832df04b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "docs/add.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "8505d0e9205c3bb9",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "6376985858deda18",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "docs/add.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "1b76ddc28e57dce9",
+  "lastOpenFiles": [
+    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx/work-products.bin",
+    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx/query-cache.bin",
+    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx/dep-graph.bin",
+    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx",
+    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo/work-products.bin",
+    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo/query-cache.bin",
+    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo/dep-graph.bin",
+    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo",
+    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-working/work-products.bin",
+    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-working/query-cache.bin",
+    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-working/dep-graph.part.bin",
+    "docs/개발기.md",
+    "docs/add.md",
+    "docs/git.md",
+    "docs/hash-object.md",
+    "docs/git internal.md"
+  ]
+}
