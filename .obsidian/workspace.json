@@ -4,47 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "f1d499a7cfe549df",
+        "id": "8d09382474e31480",
         "type": "tabs",
         "children": [
           {
-            "id": "a49be0935a00592a",
+            "id": "3f7b962ad37a2914",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/git.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "1bcb1d68781c54eb",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/git.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "1b76ddc28e57dce9",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/add.md",
+                "file": "docs/개발기.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -110,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/add.md",
+                "file": "docs/개발기.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/add.md",
+                "file": "docs/개발기.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/add.md"
+                "file": "docs/개발기.md"
               }
             }
           }
@@ -171,22 +146,23 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "1b76ddc28e57dce9",
+  "active": "3f7b962ad37a2914",
   "lastOpenFiles": [
-    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx/work-products.bin",
-    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx/query-cache.bin",
-    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx/dep-graph.bin",
-    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-a5emi2nlym5ctxx2m2dwurnhx",
-    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo/work-products.bin",
-    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo/query-cache.bin",
-    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo/dep-graph.bin",
-    "target/debug/incremental/깃-2ykejm0u9zdye/s-gouf83pjjr-si0z9v-an0tj7ql1wujzppsvthidwgmo",
-    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-working/work-products.bin",
-    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-working/query-cache.bin",
-    "target/debug/incremental/깃-enxq0ep6borz/s-gouf83pjjr-1t7u6z8-working/dep-graph.part.bin",
+    "target/debug/incremental/깃-3sz70paqozmj3/s-govinbvsif-1h55d3f-1hrb3egczpoi0gw1kl72fqsm8/work-products.bin",
+    "target/debug/incremental/깃-3sz70paqozmj3/s-govinbvsif-1h55d3f-1hrb3egczpoi0gw1kl72fqsm8/query-cache.bin",
+    "target/debug/incremental/깃-3sz70paqozmj3/s-govinbvsif-1h55d3f-1hrb3egczpoi0gw1kl72fqsm8/dep-graph.bin",
+    "target/debug/incremental/깃-3sz70paqozmj3/s-govinbvsif-1h55d3f-1hrb3egczpoi0gw1kl72fqsm8",
+    "target/debug/incremental/깃-1p6in5ig24l9l/s-govinbvsif-1nb5a8i-57nt5639ef06kstm9jalrhen1/work-products.bin",
+    "target/debug/incremental/깃-1p6in5ig24l9l/s-govinbvsif-1nb5a8i-57nt5639ef06kstm9jalrhen1/query-cache.bin",
+    "target/debug/incremental/깃-1p6in5ig24l9l/s-govinbvsif-1nb5a8i-57nt5639ef06kstm9jalrhen1/dep-graph.bin",
+    "target/debug/incremental/깃-1p6in5ig24l9l/s-govinbvsif-1nb5a8i-57nt5639ef06kstm9jalrhen1",
+    "target/debug/incremental/깃-1p6in5ig24l9l/s-govinbvsif-1nb5a8i-working/work-products.bin",
+    "target/debug/incremental/깃-1p6in5ig24l9l/s-govinbvsif-1nb5a8i-working/query-cache.bin",
+    "target/debug/incremental/깃-1p6in5ig24l9l/s-govinbvsif-1nb5a8i-working/dep-graph.part.bin",
+    "docs/git.md",
+    "b.md",
     "docs/개발기.md",
     "docs/add.md",
-    "docs/git.md",
     "docs/hash-object.md",
     "docs/git internal.md"
   ]

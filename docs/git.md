@@ -22,6 +22,32 @@
 	- git init --object-format sha256 을 통하여 sha 256 으로 관리되는 repository 를 만들 수 있음.
 
 
+
+## git commands
+
+###  -v | --version
+print version
+### -h | --help
+show help message
+
+###  -C \<path\>
+
+path 에서 git command 를 실행. -C "" 일케 오면 걍 현재 working directory. 
+아래 두 커멘드는 같은 역할을 함
+```
+git --git-dir=a.git --work-tree=b -C c status
+git --git-dir=c/a.git --work-tree=c/b status
+```
+
+### --work-tree=\<path\>
+
+이건 먼소린지 몰겟음. git-config & git-worktree 를 참고하라는데 담에 볼게...
+
+###  --git-dir=\<path\>
+
+기본적으로 .git 으로 관리되는 그 디렉토리를 변경. --git-dir option 대신 GIT_DIR 이란 환경변수로도 control 할 수 있음.
+
+
 ## git init & git clone
 
 - .git 이라는 directory 가 생김
