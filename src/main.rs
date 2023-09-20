@@ -2,12 +2,14 @@ use clap::Parser;
 use cli::{Cli, Commands};
 use std::ffi::OsStr;
 
+use crate::data_store::{data_store::DataStore, file_store::FileStore, memory_store::MemoryStore};
+
 mod cli;
+mod data_store;
 
 fn run(command: Commands) {
     // CommandExecutorFactory::new(command).execute();
 
-    Executer::new(command).execute();
     match command {
         Commands::Add(add) => {
             println!("Adding {:?} ", Some(add.path_spec));
@@ -73,6 +75,9 @@ fn run(command: Commands) {
 }
 
 fn main() {
+    println!("FileStore: {:?}", FileStore::new().read("test").unwrap());
+    println!("MemoryStore: {:?}", MemoryStore::new().read("test"));
+
     let args = Cli::parse();
 
     println!("=========args: {:?}", args);
