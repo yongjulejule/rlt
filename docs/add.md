@@ -21,3 +21,4 @@ compressed = zlib.compress(Hased)
 path = '.git/objects/' + Sha1Hashed[0..1] + Sha1Hashed[2..]
 createFile(path).write(compressed)
 ```
+

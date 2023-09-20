@@ -1,19 +1,16 @@
-use clap::{Args, Parser, Subcommand, ValueEnum, ValueHint};
+use clap::Parser;
 use cli::{Cli, Commands};
 use std::ffi::OsStr;
 
+use crate::data_store::{data_store::DataStore, file_store::FileStore, memory_store::MemoryStore};
+
 mod cli;
+mod data_store;
 
 fn run(command: Commands) {
     // CommandExecutorFactory::new(command).execute();
-}
 
-fn main() {
-    let args = Cli::parse();
-
-    println!("=========args: {:?}", args);
-
-    match args.command {
+    match command {
         Commands::Add(add) => {
             println!("Adding {:?} ", Some(add.path_spec));
         }
@@ -75,21 +72,15 @@ fn main() {
             println!("No subcommand was used");
         }
     }
-
-    // Continued program logic goes here...
 }
 
-// mod add;
-// mod blob;
+fn main() {
+    println!("FileStore: {:?}", FileStore::new().read("test").unwrap());
+    println!("MemoryStore: {:?}", MemoryStore::new().read("test"));
 
-// fn usage_message() -> String {
-//     return format!(
-//         "Usage: rlt <subcommand> [options] [args]\n{}",
-//         "\tadd [options] <filename>|<directory>\n"
-//     );
-// }
+    let args = Cli::parse();
 
-// fn error(message: &str) -> i32 {
-//     eprintln!("{}", message);
-//     return 1;
-// }
+    println!("=========args: {:?}", args);
+
+    run(args.command);
+}
