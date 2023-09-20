@@ -1,7 +1,7 @@
-use clap::{Args, Parser, Subcommand, ValueEnum, ValueHint};
+use clap::{Args, Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
 
-use std::ffi::OsStr;
+// use std::ffi::OsStr;
 use std::ffi::OsString;
 
 #[derive(Debug, Parser)] // requires `derive` feature
@@ -11,8 +11,29 @@ pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
 
-    #[arg(short = 'C', required = false, value_name = "PATH")]
+    #[arg(
+        short = 'C',
+        required = false,
+        value_name = "path",
+        default_value = "."
+    )]
     pub execute_path: PathBuf,
+
+    #[arg(
+        long = "work-tree",
+        required = false,
+        value_name = "path",
+        default_value = "."
+    )]
+    pub work_tree: PathBuf,
+
+    #[arg(
+        long = "git-dir",
+        required = false,
+        value_name = "path",
+        default_value = "."
+    )]
+    pub git_dir: PathBuf,
 }
 
 #[derive(Debug, Subcommand)]

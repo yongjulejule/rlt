@@ -1,4 +1,4 @@
-use clap::{Args, Parser, Subcommand, ValueEnum, ValueHint};
+use clap::Parser;
 use cli::{Cli, Commands};
 use std::ffi::OsStr;
 
@@ -6,14 +6,9 @@ mod cli;
 
 fn run(command: Commands) {
     // CommandExecutorFactory::new(command).execute();
-}
 
-fn main() {
-    let args = Cli::parse();
-
-    println!("=========args: {:?}", args);
-
-    match args.command {
+    Executer::new(command).execute();
+    match command {
         Commands::Add(add) => {
             println!("Adding {:?} ", Some(add.path_spec));
         }
@@ -75,21 +70,12 @@ fn main() {
             println!("No subcommand was used");
         }
     }
-
-    // Continued program logic goes here...
 }
 
-// mod add;
-// mod blob;
+fn main() {
+    let args = Cli::parse();
 
-// fn usage_message() -> String {
-//     return format!(
-//         "Usage: rlt <subcommand> [options] [args]\n{}",
-//         "\tadd [options] <filename>|<directory>\n"
-//     );
-// }
+    println!("=========args: {:?}", args);
 
-// fn error(message: &str) -> i32 {
-//     eprintln!("{}", message);
-//     return 1;
-// }
+    run(args.command);
+}
