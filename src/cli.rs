@@ -38,6 +38,9 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
+    #[command(about = "initializes a git repository")]
+    Init(InitArgs),
+
     /// Clones repos
     #[command(arg_required_else_help = true)]
     Clone {
@@ -77,6 +80,27 @@ pub enum Commands {
     External(Vec<OsString>),
 }
 
+#[derive(Debug, Args)]
+#[command(args_conflicts_with_subcommands = true)]
+pub struct InitArgs {
+    #[arg(short = 'q', long = "quiet", required = false)]
+    quiet: bool,
+
+    #[arg(long = "bare", required = false)]
+    bare: bool,
+
+    #[arg(long = "template", required = false, value_name = "template_directory")]
+    template: Option<PathBuf>,
+
+    #[arg(long = "separate-git-dir", required = false, value_name = "git_dir")]
+    separate_git_dir: Option<PathBuf>,
+
+    #[arg(long = "object-format", required = false, value_name = "sha1|sha256")]
+    object_format: Option<String>,
+
+    #[arg(default_value = ".")]
+    directory: Option<PathBuf>,
+}
 #[derive(Debug, Args)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct AddArgs {
