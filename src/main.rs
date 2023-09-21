@@ -6,11 +6,17 @@ use crate::data_store::{data_store::DataStore, file_store::FileStore, memory_sto
 
 mod cli;
 mod data_store;
+mod init;
 
 fn run(command: Commands) {
     // CommandExecutorFactory::new(command).execute();
 
     match command {
+        Commands::Init(init) => {
+            println!("Initializing repository at {:?}", init);
+            let store = MemoryStore::new();
+            init::run(&store)
+        }
         Commands::Add(add) => {
             println!("Adding {:?} ", Some(add.path_spec));
         }
@@ -75,9 +81,6 @@ fn run(command: Commands) {
 }
 
 fn main() {
-    println!("FileStore: {:?}", FileStore::new().read("test").unwrap());
-    println!("MemoryStore: {:?}", MemoryStore::new().read("test"));
-
     let args = Cli::parse();
 
     println!("=========args: {:?}", args);

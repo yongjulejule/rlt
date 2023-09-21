@@ -3,6 +3,7 @@ use std::sync::RwLock;
 
 use super::data_store::DataStore;
 
+#[derive(Debug)]
 pub struct MemoryStore {
     store: RwLock<HashMap<String, Vec<u8>>>,
 }
