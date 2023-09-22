@@ -1,5 +1,4 @@
 /target
 .rlt
 
-.obsidian
-.vscode
+.DS_Store

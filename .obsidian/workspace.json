@@ -1,0 +1,205 @@
+{
+  "main": {
+    "id": "5db0394612f71825",
+    "type": "split",
+    "children": [
+      {
+        "id": "9ca4b36e1b5798a8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fdda5af47642817c",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {}
+            }
+          },
+          {
+            "id": "7b0d6cb1851c579a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/설계 (고민).md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "8bf8c3076f28ee2b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/개발기.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "b5d810468e474daf",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/설계 (고민).md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "cd0dce7139accaa0",
+    "type": "split",
+    "children": [
+      {
+        "id": "28e1ce286730edfa",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "12694e4f76f5546b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "e29ca47ae8da6f30",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "f97bad9e54e5e514",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200
+  },
+  "right": {
+    "id": "bc8f0714ba29c72c",
+    "type": "split",
+    "children": [
+      {
+        "id": "c75e7cc1b5bb4549",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d9423045a3d0bf8e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "cb315aa2832df04b",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "8505d0e9205c3bb9",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "6376985858deda18",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-excalidraw-plugin:Create new drawing": false
+    }
+  },
+  "active": "fdda5af47642817c",
+  "lastOpenFiles": [
+    "Excalidraw/Drawing 2023-09-21 23.55.51.excalidraw.md",
+    "Excalidraw/Drawing 2023-09-21 23.57.46.excalidraw.md",
+    "Excalidraw/Drawing 2023-09-21 23.57.47.excalidraw.md",
+    "docs/개발기.md",
+    "docs/설계 (고민).md",
+    "docs/git-init.md",
+    "Excalidraw",
+    "target/debug/deps/깃-52afcad6919aae8e",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/2jxjadln72z8zjp9.o",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/work-products.bin",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/wndyuct2fcwytyg.o",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/w5nj50c3f96exdq.o",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/vo03stsrwrl0sw7.o",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/ucf48mvbcynuvk0.o",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/tio50h1uklbkcjl.o",
+    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/s0qgb6exjgh1npy.o",
+    "docs/assets/Screenshot 2023-09-21 at 8.26.10 PM.png",
+    "docs/Screenshot 2023-09-21 at 8.26.10 PM.png",
+    "docs/git.md",
+    "README.md",
+    "docs/hash-object.md",
+    "docs/git internal.md",
+    "docs/add.md",
+    "b.md"
+  ]
+}
