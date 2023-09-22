@@ -28,6 +28,16 @@
             }
           },
           {
+            "id": "f002a8c8d9d02cb5",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/Drawing 2023-09-22 20.04.07.excalidraw.md"
+              }
+            }
+          },
+          {
             "id": "8bf8c3076f28ee2b",
             "type": "leaf",
             "state": {
@@ -51,7 +61,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -117,6 +128,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "docs/설계 (고민).md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -133,6 +145,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "docs/설계 (고민).md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -154,7 +167,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "docs/설계 (고민).md"
+              }
             }
           }
         ]
@@ -175,29 +190,33 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "fdda5af47642817c",
+  "active": "7b0d6cb1851c579a",
   "lastOpenFiles": [
+    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto/work-products.bin",
+    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto/query-cache.bin",
+    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto/dep-graph.bin",
+    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto",
+    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c/work-products.bin",
+    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c/query-cache.bin",
+    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c/dep-graph.bin",
+    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c",
+    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-working/work-products.bin",
+    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-working/query-cache.bin",
+    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-working/dep-graph.part.bin",
+    "docs/개발기.md",
+    "docs/hash-object.md",
+    "docs/git.md",
+    "docs/assets/Pasted image 20230922204246.png",
+    "docs/assets/Screenshot 2023-09-21 at 8.26.10 PM.png",
+    "docs/설계 (고민).md",
+    "Excalidraw/Pasted Image 20230922201624_949.png",
+    "Excalidraw/Drawing 2023-09-22 20.04.07.excalidraw.md",
     "Excalidraw/Drawing 2023-09-21 23.55.51.excalidraw.md",
     "Excalidraw/Drawing 2023-09-21 23.57.46.excalidraw.md",
     "Excalidraw/Drawing 2023-09-21 23.57.47.excalidraw.md",
-    "docs/개발기.md",
-    "docs/설계 (고민).md",
     "docs/git-init.md",
-    "Excalidraw",
-    "target/debug/deps/깃-52afcad6919aae8e",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/2jxjadln72z8zjp9.o",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/work-products.bin",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/wndyuct2fcwytyg.o",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/w5nj50c3f96exdq.o",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/vo03stsrwrl0sw7.o",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/ucf48mvbcynuvk0.o",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/tio50h1uklbkcjl.o",
-    "target/debug/incremental/깃-3lctqj4g1prxc/s-goxpajqggo-xdfxu-66fxjbhrt7f5z32ppirgfaa64/s0qgb6exjgh1npy.o",
-    "docs/assets/Screenshot 2023-09-21 at 8.26.10 PM.png",
     "docs/Screenshot 2023-09-21 at 8.26.10 PM.png",
-    "docs/git.md",
     "README.md",
-    "docs/hash-object.md",
     "docs/git internal.md",
     "docs/add.md",
     "b.md"
