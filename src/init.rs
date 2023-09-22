@@ -1,6 +1,6 @@
-use crate::{cli::InitArgs, data_store::data_store::DataStore};
+use crate::data_store::data_store::DataStore;
 
-pub fn run<T: DataStore>(store: &T, path: String) {
+pub fn run<T: DataStore>(store: &T /* , path: String */) {
   {
     let data = "[core]
     repositoryformatversion = 0

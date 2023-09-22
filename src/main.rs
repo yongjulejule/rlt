@@ -1,21 +1,34 @@
-use clap::Parser;
+use clap::{Error, Parser};
 use cli::{Cli, Commands};
 use std::ffi::OsStr;
 
-use crate::data_store::{data_store::DataStore, file_store::FileStore, memory_store::MemoryStore};
+use crate::{data_store::memory_store::MemoryStore, hash_object::HashObject};
 
 mod cli;
 mod data_store;
+mod hash_object;
 mod init;
 
 fn run(command: Commands) {
   // CommandExecutorFactory::new(command).execute();
 
   match command {
+    Commands::HashObject(hash_object) => {
+      let store = MemoryStore::new();
+      let hash_object = HashObject::new(
+        Box::new(store),
+        "sha1".to_string(),
+        hash_object.write,
+        hash_object.object_type.unwrap_or("blob".to_string()),
+        hash_object.from_stdin,
+        hash_object.path,
+      );
+      hash_object.run().unwrap();
+    }
     Commands::Init(init) => {
       println!("Initializing repository at {:?}", init);
       let store = MemoryStore::new();
-      init::run(&store, init)
+      init::run(&store)
     }
     Commands::Add(add) => {
       println!("Adding {:?} ", Some(add.path_spec));

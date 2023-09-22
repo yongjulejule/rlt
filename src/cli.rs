@@ -41,6 +41,8 @@ pub enum Commands {
   #[command(about = "initializes a git repository")]
   Init(InitArgs),
 
+  HashObject(HashObjectArgs),
+
   /// Clones repos
   #[command(arg_required_else_help = true)]
   Clone {
@@ -100,6 +102,25 @@ pub struct InitArgs {
 
   #[arg(default_value = ".")]
   pub directory: Option<PathBuf>,
+}
+
+#[derive(Debug, Args)]
+#[command(args_conflicts_with_subcommands = true)]
+pub struct HashObjectArgs {
+  #[arg(short = 't', long = "type", required = false, value_name = "type")]
+  pub object_type: Option<String>,
+
+  #[arg(short = 'w', long = "write", required = false)]
+  pub write: bool,
+
+  #[arg(short = 's', long = "stdin", required = false)]
+  pub from_stdin: bool,
+
+  #[arg(short = 'p', long = "print", required = false)]
+  pub print: bool,
+
+  #[arg(value_name = "path", required = false)]
+  pub path: Vec<String>,
 }
 
 #[derive(Debug, Args)]
