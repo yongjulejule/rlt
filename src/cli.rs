@@ -15,7 +15,7 @@ pub struct Cli {
     short = 'C',
     required = false,
     value_name = "path",
-    default_value = "."
+    default_value = ""
   )]
   pub execute_path: PathBuf,
 

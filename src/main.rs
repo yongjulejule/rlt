@@ -17,14 +17,24 @@ mod hasher;
 mod init;
 mod workspace_provider;
 
-fn run(command: Commands) {
+fn run(args: Cli) {
+  let command = args.command;
+
+  let execute_path = args.execute_path;
+
+  let store: Box<dyn DataStore> = if cfg!(debug_assertions) {
+    Box::new(MemoryStore::new())
+  } else {
+    Box::new(FileStore::new(&execute_path.to_str().unwrap()))
+  };
+
   match command {
     Commands::HashObject(args) => {
-      let store = MemoryStore::new();
+      // let store = MemoryStore::new();
       let provider = LocalFilesystemProvider::new(PathBuf::from("."));
       let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
       let hash_object = HashObject::new(
-        &store,
+        store.as_ref(),
         &provider,
         hasher.as_ref(),
         args.write,
@@ -35,16 +45,8 @@ fn run(command: Commands) {
     }
     Commands::Init(init) => {
       println!("Initializing repository at {:?}", init);
-      // if release build, use file store else use memory store
-      // let store: Box<dyn DataStore> = if cfg!(debug_assertions) {
-      //   Box::new(MemoryStore::new())
-      // } else {
-      //   Box::new(FileStore::new())
-      // };
 
-      let store: Box<dyn DataStore> = Box::new(FileStore::new("."));
-
-      init::run(&store)
+      init::run(store.as_ref())
     }
     Commands::Add(add) => {
       println!("Adding {:?} ", Some(add.path_spec));
@@ -111,5 +113,5 @@ fn main() {
 
   println!("=========args: {:?}", args);
 
-  run(args.command);
+  run(args);
 }
