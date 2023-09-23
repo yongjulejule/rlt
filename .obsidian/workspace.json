@@ -8,22 +8,32 @@
         "type": "tabs",
         "children": [
           {
-            "id": "fdda5af47642817c",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {}
-            }
-          },
-          {
             "id": "7b0d6cb1851c579a",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "excalidraw",
               "state": {
-                "file": "docs/설계 (고민).md",
-                "mode": "source",
-                "source": false
+                "file": "Excalidraw/hash-object-from-gpt.excalidraw.md"
+              }
+            }
+          },
+          {
+            "id": "91002418a312d493",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/hash-object-from-gpt.excalidraw.md"
+              }
+            }
+          },
+          {
+            "id": "7ce3c6ab12887d8b",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Excalidraw/client-with-workspace-and-core.md"
               }
             }
           },
@@ -31,19 +41,9 @@
             "id": "f002a8c8d9d02cb5",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
-              "state": {
-                "file": "Excalidraw/Drawing 2023-09-22 20.04.07.excalidraw.md"
-              }
-            }
-          },
-          {
-            "id": "8bf8c3076f28ee2b",
-            "type": "leaf",
-            "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/개발기.md",
+                "file": "docs/hash-object.md",
                 "mode": "source",
                 "source": false
               }
@@ -62,7 +62,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -108,7 +108,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -128,7 +129,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/설계 (고민).md",
+                "file": "docs/hash-object.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -145,7 +146,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "docs/설계 (고민).md",
+                "file": "docs/hash-object.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -168,7 +169,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/설계 (고민).md"
+                "file": "docs/hash-object.md"
               }
             }
           }
@@ -190,35 +191,38 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "7b0d6cb1851c579a",
+  "active": "f002a8c8d9d02cb5",
   "lastOpenFiles": [
-    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto/work-products.bin",
-    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto/query-cache.bin",
-    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto/dep-graph.bin",
-    "target/debug/incremental/깃-3q16qqtv4jpdv/s-goytgwoii2-omce6m-2tqjruo5jgzufjxtc7crotcto",
-    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c/work-products.bin",
-    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c/query-cache.bin",
-    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c/dep-graph.bin",
-    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-8bcvxd9qk9kkvmzcjfk19uz2c",
-    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-working/work-products.bin",
-    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-working/query-cache.bin",
-    "target/debug/incremental/깃-28soedu72qelk/s-goytgwoii2-10su4wb-working/dep-graph.part.bin",
-    "docs/개발기.md",
-    "docs/hash-object.md",
+    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175/work-products.bin",
+    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175/query-cache.bin",
+    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175/dep-graph.bin",
+    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175",
+    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb/query-cache.bin",
+    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb/work-products.bin",
+    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb/dep-graph.bin",
+    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb",
+    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-working/work-products.bin",
+    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-working/query-cache.bin",
+    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-working/dep-graph.part.bin",
+    "docs/add.md",
     "docs/git.md",
-    "docs/assets/Pasted image 20230922204246.png",
+    "docs/hash-object.md",
+    "docs/개발기.md",
+    "docs/git-init.md",
     "docs/assets/Screenshot 2023-09-21 at 8.26.10 PM.png",
-    "docs/설계 (고민).md",
-    "Excalidraw/Pasted Image 20230922201624_949.png",
+    "docs/git internal.md",
     "Excalidraw/Drawing 2023-09-22 20.04.07.excalidraw.md",
+    "Excalidraw/hash-object-from-gpt.excalidraw.md",
+    "Excalidraw/client-with-workspace-and-core.md",
+    "Untitled.md",
+    "docs/설계 (고민).md",
+    "docs/assets/Pasted image 20230922204246.png",
+    "Excalidraw/Pasted Image 20230922201624_949.png",
     "Excalidraw/Drawing 2023-09-21 23.55.51.excalidraw.md",
     "Excalidraw/Drawing 2023-09-21 23.57.46.excalidraw.md",
     "Excalidraw/Drawing 2023-09-21 23.57.47.excalidraw.md",
-    "docs/git-init.md",
     "docs/Screenshot 2023-09-21 at 8.26.10 PM.png",
     "README.md",
-    "docs/git internal.md",
-    "docs/add.md",
     "b.md"
   ]
 }
