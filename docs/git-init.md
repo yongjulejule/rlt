@@ -86,6 +86,10 @@ git-branchs  or git-tags 를 관리하는 곳인데, 아직 잘 모른다. 디�
 `exclude` 파일이 있는데, .gitignore 와 역할이 같다고 한다. 단지 git tracking 이 안될뿐. 좋네? 이런게 있다니 굿이네요
 
 
+---
+위 파일들을 그냥 생성하기만 하면 된다.
+
+
 # options
 
 ## [-q | --quiet]

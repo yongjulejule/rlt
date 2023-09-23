@@ -108,8 +108,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -193,22 +192,21 @@
   },
   "active": "f002a8c8d9d02cb5",
   "lastOpenFiles": [
-    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175/work-products.bin",
-    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175/query-cache.bin",
-    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175/dep-graph.bin",
-    "target/debug/incremental/깃-h314s0ar6ka8/s-gozm5phal9-21hb5o-753dso61xh5rp1a8w3kqiw175",
-    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb/query-cache.bin",
-    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb/work-products.bin",
-    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb/dep-graph.bin",
-    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-a739kmf157f2ut937syczjnqb",
-    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-working/work-products.bin",
-    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-working/query-cache.bin",
-    "target/debug/incremental/깃-3idj7behq4nle/s-gozm5pharr-17du2bc-working/dep-graph.part.bin",
-    "docs/add.md",
-    "docs/git.md",
-    "docs/hash-object.md",
-    "docs/개발기.md",
     "docs/git-init.md",
+    "target/release/refs/tags",
+    "target/release/refs/heads",
+    "target/release/refs",
+    "target/release/objects/pack",
+    "target/release/objects/info",
+    "target/release/objects",
+    "target/release/info/exclude",
+    "target/release/info",
+    "target/release/description",
+    "target/release/HEAD",
+    "docs/hash-object.md",
+    "docs/git.md",
+    "docs/add.md",
+    "docs/개발기.md",
     "docs/assets/Screenshot 2023-09-21 at 8.26.10 PM.png",
     "docs/git internal.md",
     "Excalidraw/Drawing 2023-09-22 20.04.07.excalidraw.md",

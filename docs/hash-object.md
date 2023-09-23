@@ -24,7 +24,7 @@ git hash-object 명령에는 동작을 수정하는 데 사용할 수 있는 몇
 # git object 만들기
 
 1. 적절한 Content 작성
-2. Content length 를 이용해 "`object-type` <Content-length`\\0<Content`" 형태로 문자열 생성
+2. Content length 를 이용해 `object-type <Content-length>\0<Content>` 형태로 문자열 생성
 3. 생성한 문자열을 이용해 sha-1 hash
 4. hash 한 문자 앞 2글자를 디렉토리,  나머지 38글자를 (sha-256 이면 62 글자) 를 파일명으로 파일 저장
 5. Content 를 zlib compress 를 해서 파일 내용에 write
@@ -39,3 +39,17 @@ compressed = zlib.compress(Hased)
 path = '.git/objects/' + Sha1Hashed[0..1] + Sha1Hashed[2..]
 createFile(path).write(compressed)
 ```
+
+# options
+
+## -t \<type>
+
+object type. 
+- blob
+- tree
+- commit
+- tag
+## -w (write)
+ - hash-object 의 결과를 object database 에 작성
+## --stdin
+- stdin 에서 파일을 받음. 근데 파일명은 머임?
