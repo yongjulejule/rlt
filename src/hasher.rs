@@ -1,6 +1,22 @@
 use sha1::Sha1;
 use sha2::{Digest, Sha256};
 
+pub struct HasherFactory {}
+
+impl HasherFactory {
+  pub fn new() -> Self {
+    return Self {};
+  }
+
+  pub fn get_hasher(&self, strategy: String) -> Box<dyn Hasher> {
+    match strategy.as_str() {
+      "sha256" => Box::new(Sha256Hasher::new()),
+      "sha1" => Box::new(Sha1Hasher::new()),
+      _ => panic!("Unknown hash strategy"),
+    }
+  }
+}
+
 pub trait Hasher {
   fn hash(&self, data: &String) -> String;
 }

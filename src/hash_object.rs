@@ -3,7 +3,6 @@ use flate2::Compression;
 use std::io::Write;
 
 use crate::data_store::data_store::DataStore;
-use crate::hasher::{Sha1Hasher, Sha256Hasher};
 use crate::workspace_provider::workspace_provider::WorkspaceProvider;
 
 use super::hasher::Hasher;
@@ -11,7 +10,7 @@ use super::hasher::Hasher;
 pub struct HashObject<'a> {
   store: &'a dyn DataStore,
   provider: &'a dyn WorkspaceProvider,
-  hasher: Box<dyn Hasher>,
+  hasher: &'a dyn Hasher,
   write: bool,
   object_type: String,
   path: Vec<String>,
@@ -21,7 +20,7 @@ impl<'a> HashObject<'a> {
   pub fn new(
     store: &'a dyn DataStore,
     provider: &'a dyn WorkspaceProvider,
-    hash_strategy: String,
+    hasher: &'a dyn Hasher,
     write: bool,
     object_type: String,
     path: Vec<String>,
@@ -29,10 +28,7 @@ impl<'a> HashObject<'a> {
     return Self {
       store,
       provider,
-      hasher: match hash_strategy.as_str() {
-        "sha256" => Box::new(Sha256Hasher::new()),
-        _ => Box::new(Sha1Hasher::new()),
-      },
+      hasher,
       write,
       object_type,
       path,
@@ -46,7 +42,8 @@ impl<'a> HashObject<'a> {
       .map(|p| {
         // hash with object type & content in path
         let content = self.provider.get_contents(p.to_string());
-        let key = format!("{} {}\0{}", self.object_type, content.len(), content);
+        let key =
+          format!("{} {}\0{}", self.object_type, content.len(), content);
         let hashed_key = self.hasher.hash(&key);
         if self.write {
           let content = self.provider.get_contents(p.to_string());
@@ -79,7 +76,7 @@ fn compressor(content: String) -> Vec<u8> {
 mod tests {
   use super::*;
   use crate::{
-    data_store::memory_store::MemoryStore,
+    data_store::memory_store::MemoryStore, hasher,
     workspace_provider::test_content_provider::TestContentProvider,
   };
 
@@ -89,13 +86,20 @@ mod tests {
     store.write("test", b"test-body").expect("write test");
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
+    let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
-    let hash_strategy = "sha1".to_string();
     let write = false;
     let object_type = "blob".to_string();
     let path = vec!["test".to_string()];
 
-    let hash_object = HashObject::new(&store, &provider, hash_strategy, write, object_type, path);
+    let hash_object = HashObject::new(
+      &store,
+      &provider,
+      hasher.as_ref(),
+      write,
+      object_type,
+      path,
+    );
     let result = hash_object.run().unwrap();
     assert_eq!(
       result.first().unwrap().to_owned(),
@@ -109,17 +113,25 @@ mod tests {
     store.write("test", b"test-body").expect("write test");
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
+    let hasher = hasher::HasherFactory::new().get_hasher("sha256".to_string());
 
-    let hash_strategy = "sha256".to_string();
     let write = false;
     let object_type = "blob".to_string();
     let path = vec!["test".to_string()];
 
-    let hash_object = HashObject::new(&store, &provider, hash_strategy, write, object_type, path);
+    let hash_object = HashObject::new(
+      &store,
+      &provider,
+      hasher.as_ref(),
+      write,
+      object_type,
+      path,
+    );
     let result = hash_object.run().unwrap();
     assert_eq!(
       result.first().unwrap().to_owned(),
-      "459e301b232432c38d4d3cb64884fe94c42408916c035ae208b74f6fbd30d66d".to_string()
+      "459e301b232432c38d4d3cb64884fe94c42408916c035ae208b74f6fbd30d66d"
+        .to_string()
     );
   }
 
@@ -128,13 +140,20 @@ mod tests {
     let store = MemoryStore::new();
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
+    let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
-    let hash_strategy = "sha1".to_string();
     let write = true;
     let object_type = "blob".to_string();
     let path = vec!["test".to_string()];
 
-    let hash_object = HashObject::new(&store, &provider, hash_strategy, write, object_type, path);
+    let hash_object = HashObject::new(
+      &store,
+      &provider,
+      hasher.as_ref(),
+      write,
+      object_type,
+      path,
+    );
     let result = hash_object.run().unwrap();
     assert_eq!(
       result.first().unwrap().to_owned(),

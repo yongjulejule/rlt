@@ -14,16 +14,17 @@ mod workspace_provider;
 
 fn run(command: Commands) {
   match command {
-    Commands::HashObject(hash_object) => {
+    Commands::HashObject(args) => {
       let store = MemoryStore::new();
       let provider = LocalFilesystemProvider::new(PathBuf::from("."));
+      let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
       let hash_object = HashObject::new(
         &store,
         &provider,
-        "sha1".to_string(),
-        hash_object.write,
-        hash_object.object_type.unwrap_or("blob".to_string()),
-        hash_object.path,
+        hasher.as_ref(),
+        args.write,
+        args.object_type.unwrap_or("blob".to_string()),
+        args.path,
       );
       println!("Hash Object: {:?}", hash_object.run().unwrap());
     }

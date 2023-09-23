@@ -68,7 +68,8 @@ mod run_tests {
     run(&store);
     println!(
       "{}",
-      String::from_utf8(store.read("config").expect("read config")).expect("config is utf8")
+      String::from_utf8(store.read("config").expect("read config"))
+        .expect("config is utf8")
     );
     assert_eq!(
       store.read("config").expect("read config"),

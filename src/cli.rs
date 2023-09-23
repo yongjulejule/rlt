@@ -91,7 +91,11 @@ pub struct InitArgs {
   #[arg(long = "bare", required = false)]
   pub bare: bool,
 
-  #[arg(long = "template", required = false, value_name = "template_directory")]
+  #[arg(
+    long = "template",
+    required = false,
+    value_name = "template_directory"
+  )]
   pub template: Option<PathBuf>,
 
   #[arg(long = "separate-git-dir", required = false, value_name = "git_dir")]
@@ -115,9 +119,6 @@ pub struct HashObjectArgs {
 
   #[arg(short = 's', long = "stdin", required = false)]
   pub from_stdin: bool,
-
-  #[arg(short = 'p', long = "print", required = false)]
-  pub print: bool,
 
   #[arg(value_name = "path", required = true)]
   pub path: Vec<String>,
