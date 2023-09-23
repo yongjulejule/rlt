@@ -1,9 +1,8 @@
-// use std::path::PathBuf;
-
 use super::data_store::DataStore;
 
 pub struct FileStore;
 
+#[allow(dead_code)]
 impl FileStore {
   pub fn new() -> Self {
     return Self;

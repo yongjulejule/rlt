@@ -4,7 +4,7 @@ use std::path::PathBuf;
 // use std::ffi::OsStr;
 use std::ffi::OsString;
 
-#[derive(Debug, Parser)] // requires `derive` feature
+#[derive(Debug, Parser)]
 #[command(name = "rlt")]
 #[command(about = "git written by rust", long_about = None)]
 pub struct Cli {
@@ -77,7 +77,7 @@ pub enum Commands {
   /// adds things
   #[command(arg_required_else_help = true)]
   Add(AddArgs),
-  Stash(StashArgs),
+  // Stash(StashArgs),
   #[command(external_subcommand)]
   External(Vec<OsString>),
 }
@@ -119,7 +119,7 @@ pub struct HashObjectArgs {
   #[arg(short = 'p', long = "print", required = false)]
   pub print: bool,
 
-  #[arg(value_name = "path", required = false)]
+  #[arg(value_name = "path", required = true)]
   pub path: Vec<String>,
 }
 

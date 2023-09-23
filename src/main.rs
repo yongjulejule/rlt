@@ -1,29 +1,31 @@
-use clap::{Error, Parser};
+use clap::Parser;
 use cli::{Cli, Commands};
-use std::ffi::OsStr;
+use std::{ffi::OsStr, path::PathBuf};
+use workspace_provider::local_filesystem_provider::LocalFilesystemProvider;
 
 use crate::{data_store::memory_store::MemoryStore, hash_object::HashObject};
 
 mod cli;
 mod data_store;
 mod hash_object;
+mod hasher;
 mod init;
+mod workspace_provider;
 
 fn run(command: Commands) {
-  // CommandExecutorFactory::new(command).execute();
-
   match command {
     Commands::HashObject(hash_object) => {
       let store = MemoryStore::new();
+      let provider = LocalFilesystemProvider::new(PathBuf::from("."));
       let hash_object = HashObject::new(
-        Box::new(store),
+        &store,
+        &provider,
         "sha1".to_string(),
         hash_object.write,
         hash_object.object_type.unwrap_or("blob".to_string()),
-        hash_object.from_stdin,
         hash_object.path,
       );
-      hash_object.run().unwrap();
+      println!("Hash Object: {:?}", hash_object.run().unwrap());
     }
     Commands::Init(init) => {
       println!("Initializing repository at {:?}", init);
@@ -86,9 +88,6 @@ fn run(command: Commands) {
     // }
     Commands::External(args) => {
       println!("Calling out to {:?} with {:?}", &args[0], &args[1..]);
-    }
-    _ => {
-      println!("No subcommand was used");
     }
   }
 }
