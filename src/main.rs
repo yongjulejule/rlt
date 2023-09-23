@@ -3,7 +3,12 @@ use cli::{Cli, Commands};
 use std::{ffi::OsStr, path::PathBuf};
 use workspace_provider::local_filesystem_provider::LocalFilesystemProvider;
 
-use crate::{data_store::memory_store::MemoryStore, hash_object::HashObject};
+use crate::{
+  data_store::{
+    data_store::DataStore, file_store::FileStore, memory_store::MemoryStore,
+  },
+  hash_object::HashObject,
+};
 
 mod cli;
 mod data_store;
@@ -30,7 +35,15 @@ fn run(command: Commands) {
     }
     Commands::Init(init) => {
       println!("Initializing repository at {:?}", init);
-      let store = MemoryStore::new();
+      // if release build, use file store else use memory store
+      // let store: Box<dyn DataStore> = if cfg!(debug_assertions) {
+      //   Box::new(MemoryStore::new())
+      // } else {
+      //   Box::new(FileStore::new())
+      // };
+
+      let store: Box<dyn DataStore> = Box::new(FileStore::new("."));
+
       init::run(&store)
     }
     Commands::Add(add) => {
