@@ -22,6 +22,13 @@
 	- git init --object-format sha256 을 통하여 sha 256 으로 관리되는 repository 를 만들 수 있음.
 
 
+## git Environs
+
+https://git-scm.com/book/ko/v2/Git%EC%9D%98-%EB%82%B4%EB%B6%80-%ED%99%98%EA%B2%BD%EB%B3%80%EC%88%98
+
+GIT_CURL_VERBOSE=1
+GIT_MERGE_VERBOSITY=5
+GIT_TRACE=true
 
 ## git commands
 
