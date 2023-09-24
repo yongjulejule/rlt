@@ -10,7 +10,9 @@ use crate::{
   hash_object::HashObject,
 };
 
+mod cat_file;
 mod cli;
+mod compressor;
 mod data_store;
 mod hash_object;
 mod hasher;

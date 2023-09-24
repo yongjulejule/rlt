@@ -1,7 +1,4 @@
-use flate2::write::ZlibEncoder;
-use flate2::Compression;
-use std::io::Write;
-
+use crate::compressor;
 use crate::data_store::data_store::DataStore;
 use crate::workspace_provider::workspace_provider::WorkspaceProvider;
 
@@ -47,8 +44,7 @@ impl<'a> HashObject<'a> {
         let hashed_key = self.hasher.hash(&key);
         if self.write {
           let content = self.provider.get_contents(p.to_string());
-          println!("content: {:?}", content.as_bytes());
-          let zipped = compressor(content);
+          let zipped = compressor::compress(content.as_bytes());
           self
             .store
             .write(hashed_key.as_str(), &zipped)
@@ -60,16 +56,6 @@ impl<'a> HashObject<'a> {
 
     return Ok(result);
   }
-}
-
-fn compressor(content: String) -> Vec<u8> {
-  let mut compressed = ZlibEncoder::new(Vec::new(), Compression::default());
-  compressed
-    .write_all(content.as_bytes())
-    .expect("failed to write to compressed file");
-  return compressed
-    .finish()
-    .expect("failed to finish compressed file");
 }
 
 #[cfg(test)]
@@ -164,7 +150,7 @@ mod tests {
         .store
         .read("5f8ab8d1d6ed50d5b2a6c8102bac4228b4e7f973")
         .unwrap(),
-      compressor("test-body".to_string())
+      compressor::compress("test-body".as_bytes())
     )
   }
 }
