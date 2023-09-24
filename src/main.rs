@@ -31,7 +31,6 @@ fn run(args: Cli) {
   match command {
     Commands::Init(init) => {
       println!("Initializing repository at {:?}", init);
-
       init::run(store.as_ref())
     }
     Commands::HashObject(args) => {
@@ -48,8 +47,11 @@ fn run(args: Cli) {
       );
       println!("Hash Object: {:?}", hash_object.run().unwrap());
     }
-    Commands::CatFile(args) => {
-      println!("CatFile: {:?}", args);
+    Commands::CatFile {
+      object,
+      object_type,
+    } => {
+      println!("CatFile: {:?}, {:?}", object, object_type);
       todo!()
     }
     Commands::Add(add) => {

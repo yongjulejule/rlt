@@ -1,10 +1,10 @@
-use clap::{Args, Parser, Subcommand, ValueEnum};
+use clap::{ArgGroup, Args, Parser, Subcommand, ValueEnum};
 use std::path::PathBuf;
 
 // use std::ffi::OsStr;
 use std::ffi::OsString;
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, PartialEq, Eq)]
 #[command(name = "rlt")]
 #[command(about = "git written by rust", long_about = None)]
 pub struct Cli {
@@ -36,7 +36,7 @@ pub struct Cli {
   pub git_dir: PathBuf,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, PartialEq, Eq)]
 pub enum Commands {
   #[command(about = "initializes a git repository")]
   Init(InitArgs),
@@ -47,8 +47,14 @@ pub enum Commands {
   #[command(
     about = "Provide content or type and size information for repository objects"
   )]
-  CatFile(CatFileArgs),
+  // CatFile(CatFileArgs),
+  CatFile {
+    #[arg(value_name = "type")]
+    object_type: Option<String>,
 
+    #[arg(value_name = "object")]
+    object: Option<String>,
+  },
   /// Clones repos
   #[command(arg_required_else_help = true)]
   Clone {
@@ -88,7 +94,20 @@ pub enum Commands {
   External(Vec<OsString>),
 }
 
-#[derive(Debug, Args)]
+/*
+* synopsis:
+
+git cat-file <type> <object>
+git cat-file (-e | -p) <object>
+git cat-file (-t | -s) [--allow-unknown-type] <object>
+git cat-file (--batch | --batch-check | --batch-command) [--batch-all-objects]
+    [--buffer] [--follow-symlinks] [--unordered]
+    [--textconv | --filters] [-Z]
+git cat-file (--textconv | --filters)
+    [<rev>:<path|tree-ish> | --path=<path|tree-ish> <rev>]
+*/
+
+#[derive(Debug, Args, PartialEq, Eq)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct InitArgs {
   #[arg(short = 'q', long = "quiet", required = false)]
@@ -114,7 +133,7 @@ pub struct InitArgs {
   pub directory: Option<PathBuf>,
 }
 
-#[derive(Debug, Args)]
+#[derive(Debug, Args, PartialEq, Eq)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct HashObjectArgs {
   #[arg(short = 't', long = "type", required = false, value_name = "type")]
@@ -130,33 +149,7 @@ pub struct HashObjectArgs {
   pub path: Vec<String>,
 }
 
-#[derive(Debug, Args)]
-#[command(args_conflicts_with_subcommands = true)]
-pub struct CatFileArgs {
-  #[arg(short = 't', required = false)]
-  print_object_type: bool,
-
-  #[arg(short = 's', long = "size", required = false)]
-  size: bool,
-
-  #[arg(short = 'p', long = "pretty", required = false)]
-  pretty: bool,
-
-  // if any option present, type is not required
-  #[arg(value_name = "type", required_unless_all = ["size", "pretty", "print_object_type"])]
-  object_type: Option<String>,
-
-  #[arg(value_name = "object", required = false)]
-  object: Option<String>,
-}
-
-impl CatFileArgs {
-  pub fn any_option_present(&self) -> bool {
-    self.print_object_type || self.size || self.pretty
-  }
-}
-
-#[derive(Debug, Args)]
+#[derive(Debug, Args, PartialEq, Eq)]
 #[command(args_conflicts_with_subcommands = true)]
 pub struct AddArgs {
   #[arg(value_name = "PATH", required = true)]
@@ -212,4 +205,140 @@ enum StashCommands {
 struct StashPushArgs {
   #[arg(short, long)]
   message: Option<String>,
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_init() {
+    let args = Cli::parse_from(&[
+      "rlt",
+      "init",
+      "-q",
+      "--bare",
+      "--template",
+      "foo",
+      "--separate-git-dir",
+      "bar",
+      "--object-format",
+      "sha256",
+      "baz",
+    ]);
+    assert_eq!(
+      args.command,
+      Commands::Init(InitArgs {
+        quiet: true,
+        bare: true,
+        template: Some(PathBuf::from("foo")),
+        separate_git_dir: Some(PathBuf::from("bar")),
+        object_format: Some(String::from("sha256")),
+        directory: Some(PathBuf::from("baz")),
+      })
+    );
+  }
+
+  #[test]
+  fn test_hash_object() {
+    let args = Cli::parse_from(&[
+      "rlt",
+      "hash-object",
+      "-t",
+      "foo",
+      "-w",
+      "-s",
+      "bar",
+      "baz",
+    ]);
+    assert_eq!(
+      args.command,
+      Commands::HashObject(HashObjectArgs {
+        object_type: Some(String::from("foo")),
+        write: true,
+        from_stdin: true,
+        path: vec![String::from("bar"), String::from("baz")],
+      })
+    );
+  }
+
+  #[test]
+  fn test_cat_file_type_and_object_synopsis() {
+    let args = Cli::parse_from(&["rlt", "cat-file", "foo", "bar"]);
+    assert_eq!(
+      args.command,
+      Commands::CatFile {
+        object_type: Some(String::from("foo")),
+        object: Some(String::from("bar")),
+      }
+    )
+  }
+
+  #[test]
+  fn test_cat_file_options_synopsis() {
+    // let args = Cli::parse_from(&["rlt", "cat-file", "-e", "-p", "foo"]);
+    // assert_eq!(
+    //   args.command,
+    //   Commands::CatFile(CatFileArgs {
+    //     object_type: None,
+    //     secondary_object: None,
+    //     object: Some(String::from("foo")),
+    //     exists: true,
+    //     pretty: true,
+    //     show_size: false,
+    //     show_type: false,
+    //     allow_unknown_type: false,
+    //   })
+    // )
+  }
+
+  #[test]
+  fn test_add() {
+    let args = Cli::parse_from(&["rlt", "add", "-i", "-v", "-n", "foo", "bar"]);
+    assert_eq!(
+      args.command,
+      Commands::Add(AddArgs {
+        path_spec: vec![PathBuf::from("foo"), PathBuf::from("bar")],
+        interactive: true,
+        verbose: true,
+        dry_run: true,
+      })
+    );
+  }
+
+  // #[test]
+  // fn test_clone() {
+  //   let args = Cli::parse_from(&["rlt", "clone", "foo"]);
+  //   assert_eq!(
+  //     args.command,
+  //     Commands::Clone {
+  //       remote: String::from("foo"),
+  //     }
+  //   );
+  // }
+
+  // #[test]
+  // fn test_diff() {
+  //   let args = Cli::parse_from(&["rlt", "diff", "foo", "bar", "baz"]);
+  //   assert_eq!(
+  //     args.command,
+  //     Commands::Diff {
+  //       base: Some(OsString::from("foo")),
+  //       head: Some(OsString::from("bar")),
+  //       path: Some(OsString::from("baz")),
+  //       color: ColorWhen::Auto,
+  //     }
+  //   );
+  // }
+
+  // #[test]
+  // fn test_push() {
+  //   let args = Cli::parse_from(&["rlt", "push", "foo"]);
+  //   assert_eq!(
+  //     args.command,
+  //     Commands::Push {
+  //       remote: String::from("foo"),
+  //     }
+  //   );
+  // }
 }
