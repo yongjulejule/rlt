@@ -29,6 +29,11 @@ fn run(args: Cli) {
   };
 
   match command {
+    Commands::Init(init) => {
+      println!("Initializing repository at {:?}", init);
+
+      init::run(store.as_ref())
+    }
     Commands::HashObject(args) => {
       // let store = MemoryStore::new();
       let provider = LocalFilesystemProvider::new(PathBuf::from("."));
@@ -43,10 +48,9 @@ fn run(args: Cli) {
       );
       println!("Hash Object: {:?}", hash_object.run().unwrap());
     }
-    Commands::Init(init) => {
-      println!("Initializing repository at {:?}", init);
-
-      init::run(store.as_ref())
+    Commands::CatFile(args) => {
+      println!("CatFile: {:?}", args);
+      todo!()
     }
     Commands::Add(add) => {
       println!("Adding {:?} ", Some(add.path_spec));

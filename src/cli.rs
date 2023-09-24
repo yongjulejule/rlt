@@ -41,7 +41,13 @@ pub enum Commands {
   #[command(about = "initializes a git repository")]
   Init(InitArgs),
 
+  #[command(about = "hashes objects")]
   HashObject(HashObjectArgs),
+
+  #[command(
+    about = "Provide content or type and size information for repository objects"
+  )]
+  CatFile(CatFileArgs),
 
   /// Clones repos
   #[command(arg_required_else_help = true)]
@@ -122,6 +128,32 @@ pub struct HashObjectArgs {
 
   #[arg(value_name = "path", required = true)]
   pub path: Vec<String>,
+}
+
+#[derive(Debug, Args)]
+#[command(args_conflicts_with_subcommands = true)]
+pub struct CatFileArgs {
+  #[arg(short = 't', required = false)]
+  print_object_type: bool,
+
+  #[arg(short = 's', long = "size", required = false)]
+  size: bool,
+
+  #[arg(short = 'p', long = "pretty", required = false)]
+  pretty: bool,
+
+  // if any option present, type is not required
+  #[arg(value_name = "type", required_unless_all = ["size", "pretty", "print_object_type"])]
+  object_type: Option<String>,
+
+  #[arg(value_name = "object", required = false)]
+  object: Option<String>,
+}
+
+impl CatFileArgs {
+  pub fn any_option_present(&self) -> bool {
+    self.print_object_type || self.size || self.pretty
+  }
 }
 
 #[derive(Debug, Args)]

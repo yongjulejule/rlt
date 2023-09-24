@@ -1,4 +1,3 @@
-# git hash-object `file`
 
 <details>
 <summary>  Thanks Copilot Chat! </summary>
