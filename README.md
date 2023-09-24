@@ -4,6 +4,21 @@ Let's implement the git command to learn the internals of git..
 
 ## TODO 
 
+- git 은 Plumbing Commands 와 Porcelain Commands 로 나뉜다. (`git help -av | man git`)
+
+### git Plumbing Commands (Low-level Commands)
+
+- [ ] `git hash-object`
+- [ ] `git cat-file`
+- [ ] `git update-index`
+- [ ] `git write-tree`
+- [ ] `git read-tree`
+- [ ] `git ls-files`
+
+...
+
+### git Porcelain Commands (High-level Commands)
+
 - [ ] `git add`
 - [ ] `git commit`
 - [ ] `git status`
@@ -11,8 +26,6 @@ Let's implement the git command to learn the internals of git..
 - [ ] `git diff`
 - [ ] `git push`
 - [ ] `git init`
-- [ ] `git cat-file`
-- [ ] `git ls-files`
 
 ...
 
