@@ -21,7 +21,7 @@ usage: git cat-file <type> <object>
 
 ## \<object>
 
-- Hash 값. gitrevisions 참고해야함 (나중에 ㅎ)
+- Hash 값이나 HEAD / main^3 이런 친구들. (gitrevisions 참고)
 
 ## Options
 
