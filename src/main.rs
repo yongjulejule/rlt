@@ -1,3 +1,4 @@
+use accessor::Accessor;
 use clap::Parser;
 use cli::{Cli, Commands};
 use std::{ffi::OsStr, path::PathBuf};
@@ -10,6 +11,7 @@ use crate::{
   hash_object::HashObject,
 };
 
+mod accessor;
 mod cat_file;
 mod cli;
 mod compressor;
@@ -23,6 +25,8 @@ fn run(args: Cli) {
   let command = args.command;
 
   let execute_path = args.execute_path;
+
+  Accessor::new(&execute_path);
 
   let store: Box<dyn DataStore> = if cfg!(debug_assertions) {
     Box::new(MemoryStore::new())
