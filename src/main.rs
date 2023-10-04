@@ -1,25 +1,25 @@
 use clap::Parser;
 use cli::{Cli, Commands};
-use std::{ffi::OsStr, path::PathBuf};
-use workspace_provider::local_filesystem_provider::LocalFilesystemProvider;
-
-use crate::{
-  data_store::{
-    data_store::DataStore, file_store::FileStore, memory_store::MemoryStore,
-  },
-  hash_object::HashObject,
+use infrastructures::data_store::{
+  data_store::DataStore, file_store::FileStore, memory_store::MemoryStore,
 };
 
+use infrastructures::workspace_provider::local_filesystem_provider::LocalFilesystemProvider;
+use std::{ffi::OsStr, path::PathBuf};
+
+use crate::cat_file::CatFile;
+use crate::hash_object::HashObject;
+
+mod adapters;
 mod cat_file;
 mod cli;
 mod compressor;
 mod core;
-mod data_store;
+mod entities;
 mod hash_object;
 mod hasher;
+mod infrastructures;
 mod init;
-mod manager;
-mod workspace_provider;
 
 fn run(args: Cli) {
   let command = args.command;
@@ -56,7 +56,10 @@ fn run(args: Cli) {
       object_type,
     } => {
       println!("CatFile: {:?}, {:?}", object, object_type);
-      todo!()
+      let result =
+        CatFile::new(store.as_ref(), object_type.unwrap(), object.unwrap())
+          .run();
+      println!("CatFile result: {:?}", result)
     }
     Commands::Add(add) => {
       println!("Adding {:?} ", Some(add.path_spec));
