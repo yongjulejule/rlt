@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::RwLock;
 
-use super::data_store::DataStore;
+use crate::adapters::data_store::DataStore;
 
 #[derive(Debug)]
 pub struct MemoryStore {

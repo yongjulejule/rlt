@@ -4,7 +4,7 @@ use std::{
   path::PathBuf,
 };
 
-use super::data_store::DataStore;
+use crate::adapters::data_store::DataStore;
 
 pub struct FileStore {
   store_dir: PathBuf,

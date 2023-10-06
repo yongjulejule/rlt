@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::workspace_provider::WorkspaceProvider;
+use crate::adapters::workspace_provider::WorkspaceProvider;
 
 pub struct DirectContentProvider {
   pub contents: HashMap<String, String>,

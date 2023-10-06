@@ -1,6 +1,6 @@
 use std::{fs, path::PathBuf};
 
-use super::workspace_provider::WorkspaceProvider;
+use crate::adapters::workspace_provider::WorkspaceProvider;
 
 pub struct LocalFilesystemProvider {
   workspace_root: PathBuf,

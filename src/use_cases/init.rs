@@ -1,4 +1,4 @@
-use crate::data_store::data_store::DataStore;
+use crate::adapters::data_store::DataStore;
 
 const GIT_FILES: [(&str, &str); 10] = [
   ("config", "[core]\nrepositoryformatversion = 0\nfilemode = true\nbare = false\nlogallrefupdates = true\nignorecase = true\nprecomposeunicode = true"),
@@ -7,7 +7,7 @@ const GIT_FILES: [(&str, &str); 10] = [
   ("info/exclude", ""),
   ("objects/", ""),
   ("objects/info", ""),
-  ("objects/pack", ""),
+  ("objects/pack/", ""),
   ("refs/", ""),
   ("refs/heads", ""),
   ("refs/tags", ""),
@@ -22,8 +22,7 @@ pub fn run(store: &dyn DataStore /* , path: String */) {
 #[cfg(test)]
 mod run_tests {
   use super::*;
-  #[allow(unused_imports)]
-  use crate::data_store::{file_store::FileStore, memory_store::MemoryStore};
+  use crate::infrastructures::memory_store::MemoryStore;
 
   #[test]
   fn test_init() {

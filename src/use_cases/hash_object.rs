@@ -1,8 +1,7 @@
-use crate::compressor;
-use crate::data_store::data_store::DataStore;
-use crate::workspace_provider::workspace_provider::WorkspaceProvider;
-
-use super::hasher::Hasher;
+use crate::adapters::{
+  compressor, data_store::DataStore, hasher::Hasher,
+  workspace_provider::WorkspaceProvider,
+};
 
 pub struct HashObject<'a> {
   store: &'a dyn DataStore,
@@ -61,10 +60,9 @@ impl<'a> HashObject<'a> {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use crate::{
-    data_store::memory_store::MemoryStore, hasher,
-    workspace_provider::test_content_provider::TestContentProvider,
-  };
+  use crate::adapters::hasher;
+  use crate::infrastructures::memory_store::MemoryStore;
+  use crate::infrastructures::test_content_provider::TestContentProvider;
 
   #[test]
   fn test_hash_object_sha1() {

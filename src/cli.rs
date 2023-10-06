@@ -31,7 +31,7 @@ pub struct Cli {
     long = "git-dir",
     required = false,
     value_name = "path",
-    default_value = "."
+    default_value = ".git"
   )]
   pub git_dir: PathBuf,
 }
@@ -47,13 +47,12 @@ pub enum Commands {
   #[command(
     about = "Provide content or type and size information for repository objects"
   )]
-  // CatFile(CatFileArgs),
-  CatFile {
+  CatFiles {
     #[arg(value_name = "type")]
-    object_type: Option<String>,
+    object_type: String,
 
     #[arg(value_name = "object")]
-    object: Option<String>,
+    object: String,
   },
   /// Clones repos
   #[command(arg_required_else_help = true)]

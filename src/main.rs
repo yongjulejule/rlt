@@ -1,35 +1,35 @@
-use clap::Parser;
-use cli::{Cli, Commands};
-use infrastructures::data_store::{
-  data_store::DataStore, file_store::FileStore, memory_store::MemoryStore,
-};
-
-use infrastructures::workspace_provider::local_filesystem_provider::LocalFilesystemProvider;
-use std::{ffi::OsStr, path::PathBuf};
-
-use crate::cat_file::CatFile;
-use crate::hash_object::HashObject;
-
 mod adapters;
-mod cat_file;
 mod cli;
-mod compressor;
-mod core;
-mod entities;
-mod hash_object;
-mod hasher;
 mod infrastructures;
-mod init;
+mod use_cases;
+
+use crate::adapters::{hasher, object_manager};
+use crate::use_cases::cat_file::CatFile;
+use crate::use_cases::hash_object::HashObject;
+use crate::use_cases::init;
+
+use std::ffi::OsStr;
+use std::path::PathBuf;
+
+use adapters::data_store::DataStore;
+use clap::Parser;
+
+use cli::{Cli, Commands};
+use infrastructures::{
+  file_store::FileStore, local_filesystem_provider::LocalFilesystemProvider,
+  memory_store::MemoryStore,
+};
 
 fn run(args: Cli) {
   let command = args.command;
 
   let execute_path = args.execute_path;
+  let git_dir = args.git_dir;
 
   let store: Box<dyn DataStore> = if cfg!(debug_assertions) {
     Box::new(MemoryStore::new())
   } else {
-    Box::new(FileStore::new(&execute_path.to_str().unwrap()))
+    Box::new(FileStore::new(&git_dir.to_str().unwrap()))
   };
 
   match command {
@@ -51,14 +51,13 @@ fn run(args: Cli) {
       );
       println!("Hash Object: {:?}", hash_object.run().unwrap());
     }
-    Commands::CatFile {
+    Commands::CatFiles {
       object,
       object_type,
     } => {
       println!("CatFile: {:?}, {:?}", object, object_type);
-      let result =
-        CatFile::new(store.as_ref(), object_type.unwrap(), object.unwrap())
-          .run();
+      let object_manager = object_manager::ObjectManager::new(store);
+      let result = CatFile::new(&object_manager, object_type, object).run();
       println!("CatFile result: {:?}", result)
     }
     Commands::Add(add) => {
@@ -101,20 +100,6 @@ fn run(args: Cli) {
     Commands::Push { remote } => {
       println!("Pushing to {remote}");
     }
-    // Commands::Stash(stash) => {
-    //     let stash_cmd = stash.command.unwrap_or(StashCommands::Push(stash.push));
-    //     match stash_cmd {
-    //         StashCommands::Push(push) => {
-    //             println!("Pushing {push:?}");
-    //         }
-    //         StashCommands::Pop { stash } => {
-    //             println!("Popping {stash:?}");
-    //         }
-    //         StashCommands::Apply { stash } => {
-    //             println!("Applying {stash:?}");
-    //         }
-    //     }
-    // }
     Commands::External(args) => {
       println!("Calling out to {:?} with {:?}", &args[0], &args[1..]);
     }
