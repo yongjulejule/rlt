@@ -1,4 +1,9 @@
-use crate::adapters::{compressor, object_manager::ObjectManagement};
+use crate::{
+  adapters::{compressor, object_manager::ObjectManagement},
+  use_cases::utils::object_helper::{
+    check_content_size, check_object_type, parse_content,
+  },
+};
 
 pub struct CatFile<'a> {
   object_manager: &'a dyn ObjectManagement,
@@ -19,14 +24,28 @@ impl<'a> CatFile<'a> {
     };
   }
 
-  pub fn run(&self) -> Result<String, i32> {
+  pub fn run(&self) -> Result<String, String> {
     println!("cat_file: {:?}", self.object_hash);
-    let content = self
-      .object_manager
-      .read(&self.object_hash, &self.object_type)
-      .unwrap();
-    let unzipped = compressor::decompress(&content);
-    return Ok(String::from_utf8(unzipped).unwrap_or("error".to_string()));
+    let data = self.object_manager.read(&self.object_hash)?;
+    let unzipped = compressor::decompress(&data);
+    if cfg!(debug_assertions) {
+      println!("====unzipped=====");
+      for byte in &unzipped {
+        match *byte {
+          0..=31 => print!("\\x{:02x}", byte),
+          127 => print!("\\x{:02x}", byte),
+          _ => print!("{}", *byte as char),
+        }
+      }
+    }
+
+    let (content_type, content_length, content) = parse_content(&unzipped)?;
+    check_object_type(&content_type, &self.object_type)?;
+    check_content_size(content.len(), content_length)?;
+
+    String::from_utf8_lossy(&content)
+      .parse()
+      .map_err(|_| "invalid type".to_string())
   }
 }
 
@@ -62,6 +81,12 @@ mod run_tests {
       vec![test_key.to_string()],
     );
     let hash = hash_object.run().unwrap().pop().unwrap();
+    println!("hash: {:?}", hash);
+    // read data using store.read() directly
+    println!(
+      "read data: {:?}",
+      String::from_utf8_lossy(&object_manager.read(&hash).unwrap())
+    );
 
     let cat_file = CatFile::new(&object_manager, "blob".to_string(), hash);
     let content = cat_file.run().unwrap();

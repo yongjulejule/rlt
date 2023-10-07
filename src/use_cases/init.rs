@@ -6,11 +6,11 @@ const GIT_FILES: [(&str, &str); 10] = [
   ("description", "Unnamed repository; edit this file 'description' to name the repository."),
   ("info/exclude", ""),
   ("objects/", ""),
-  ("objects/info", ""),
+  ("objects/info/", ""),
   ("objects/pack/", ""),
   ("refs/", ""),
-  ("refs/heads", ""),
-  ("refs/tags", ""),
+  ("refs/heads/", ""),
+  ("refs/tags/", ""),
 ];
 
 pub fn run(store: &dyn DataStore /* , path: String */) {

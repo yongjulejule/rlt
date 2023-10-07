@@ -41,14 +41,6 @@ impl CommandExecutionContext {
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
     return Self::new(store, provider, hasher);
   }
-
-  // pub fn for_test() -> Self {
-  //   let store: Box<dyn DataStore> = Box::new(MemoryStore::new());
-  //   let provider: Box<dyn WorkspaceProvider> =
-  //     Box::new(LocalFilesystemProvider::new(".".to_string()));
-  //   let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
-  //   return Self::new(store, provider, hasher);
-  // }
 }
 
 pub struct CommandExecutor {
@@ -82,14 +74,17 @@ impl CommandExecutor {
         );
         println!("Hash Object: {:?}", hash_object.run().unwrap());
       }
-      Commands::CatFiles {
+      Commands::CatFile {
         object,
         object_type,
       } => {
         println!("CatFile: {:?}, {:?}", object, object_type);
         let object_manager = object_manager::ObjectManager::new(store.as_ref());
         let result = CatFile::new(&object_manager, object_type, object).run();
-        println!("CatFile result: {:?}", result)
+        println!(
+          "===========CatFile result=========\n{}",
+          result.ok().unwrap()
+        )
       }
       Commands::Add(add) => {
         println!("Adding {:?} ", Some(add.path_spec));

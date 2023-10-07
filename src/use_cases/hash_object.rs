@@ -31,23 +31,22 @@ impl<'a> HashObject<'a> {
     };
   }
 
-  pub fn run(&self) -> Result<Vec<String>, i32> {
+  pub fn run(&self) -> Result<Vec<String>, String> {
     let result: Vec<String> = self
       .path
       .iter()
       .map(|p| {
         // hash with object type & content in path
         let content = self.provider.get_contents(p.to_string());
-        let key =
+        let object =
           format!("{} {}\0{}", self.object_type, content.len(), content);
-        let hashed_key = self.hasher.hash(&key);
+        let hashed_key = self.hasher.hash(&object);
         if self.write {
-          let content = self.provider.get_contents(p.to_string());
-          let zipped = compressor::compress(content.as_bytes());
+          let zipped_object = compressor::compress(object.as_bytes());
           self
             .object_manager
-            .write(hashed_key.as_str(), &self.object_type, &zipped)
-            .expect("write hash");
+            .write(hashed_key.as_str(), &zipped_object)
+            .expect("write object");
         }
         return hashed_key;
       })
@@ -70,7 +69,7 @@ mod tests {
     let store = MemoryStore::new();
     let object_manager = ObjectManager::new(&store);
     object_manager
-      .write("test", "blob", b"test-body")
+      .write("test", b"test-body")
       .expect("write test");
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
@@ -100,7 +99,7 @@ mod tests {
     let store = MemoryStore::new();
     let object_manager = ObjectManager::new(&store);
     object_manager
-      .write("test", "blob", b"test-body")
+      .write("test", b"test-body")
       .expect("write test");
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
@@ -154,9 +153,9 @@ mod tests {
     assert_eq!(
       hash_object
         .object_manager
-        .read("5f8ab8d1d6ed50d5b2a6c8102bac4228b4e7f973", "blob")
+        .read("5f8ab8d1d6ed50d5b2a6c8102bac4228b4e7f973")
         .unwrap(),
-      compressor::compress("test-body".as_bytes())
+      compressor::compress("blob 9\0test-body".as_bytes())
     )
   }
 }

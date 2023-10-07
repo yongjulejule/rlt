@@ -47,7 +47,7 @@ pub enum Commands {
   #[command(
     about = "Provide content or type and size information for repository objects"
   )]
-  CatFiles {
+  CatFile {
     #[arg(value_name = "type")]
     object_type: String,
 
