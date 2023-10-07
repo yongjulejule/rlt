@@ -30,6 +30,8 @@ git hash-object 명령에는 동작을 수정하는 데 사용할 수 있는 몇
 6. git cat-file -p 로 결과 확인!
 
 
+## Blob 
+- "적절한 content" 가 file 의 content 면 blob
 ```
 Content = "git is same to rlt";
 Header = "blob Content.length\0";
