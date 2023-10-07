@@ -1,14 +1,14 @@
-use crate::adapters::{compressor, data_store::DataStore};
+use crate::adapters::{compressor, object_manager::ObjectManagement};
 
 pub struct CatFile<'a> {
-  object_manager: &'a dyn DataStore,
+  object_manager: &'a dyn ObjectManagement,
   object_type: String,
   object_hash: String,
 }
 
 impl<'a> CatFile<'a> {
   pub fn new(
-    object_manager: &'a dyn DataStore,
+    object_manager: &'a dyn ObjectManagement,
     object_type: String,
     object_hash: String,
   ) -> Self {
@@ -21,7 +21,10 @@ impl<'a> CatFile<'a> {
 
   pub fn run(&self) -> Result<String, i32> {
     println!("cat_file: {:?}", self.object_hash);
-    let content = self.object_manager.read(&self.object_hash).unwrap();
+    let content = self
+      .object_manager
+      .read(&self.object_hash, &self.object_type)
+      .unwrap();
     let unzipped = compressor::decompress(&content);
     return Ok(String::from_utf8(unzipped).unwrap_or("error".to_string()));
   }
@@ -44,8 +47,8 @@ mod run_tests {
   fn test_cat_file() {
     let test_key = "test-key";
     let test_content = "test-content";
-    let store = Box::from(MemoryStore::new());
-    let object_manager = ObjectManager::new(store);
+    let store = Box::new(MemoryStore::new());
+    let object_manager = ObjectManager::new(store.as_ref());
     let mut provider = TestContentProvider::new();
     provider.set_contents(test_key.to_string(), test_content.to_string());
 

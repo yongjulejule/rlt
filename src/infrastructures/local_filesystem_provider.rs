@@ -7,8 +7,10 @@ pub struct LocalFilesystemProvider {
 }
 
 impl LocalFilesystemProvider {
-  pub fn new(workspace_root: PathBuf) -> Self {
-    return Self { workspace_root };
+  pub fn new(workspace_root: &str) -> Self {
+    return Self {
+      workspace_root: PathBuf::from(workspace_root),
+    };
   }
 }
 

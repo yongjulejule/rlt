@@ -1,10 +1,10 @@
 use crate::adapters::{
-  compressor, data_store::DataStore, hasher::Hasher,
+  compressor, hasher::Hasher, object_manager::ObjectManagement,
   workspace_provider::WorkspaceProvider,
 };
 
 pub struct HashObject<'a> {
-  store: &'a dyn DataStore,
+  object_manager: &'a dyn ObjectManagement,
   provider: &'a dyn WorkspaceProvider,
   hasher: &'a dyn Hasher,
   write: bool,
@@ -14,7 +14,7 @@ pub struct HashObject<'a> {
 
 impl<'a> HashObject<'a> {
   pub fn new(
-    store: &'a dyn DataStore,
+    object_manager: &'a dyn ObjectManagement,
     provider: &'a dyn WorkspaceProvider,
     hasher: &'a dyn Hasher,
     write: bool,
@@ -22,7 +22,7 @@ impl<'a> HashObject<'a> {
     path: Vec<String>,
   ) -> Self {
     return Self {
-      store,
+      object_manager,
       provider,
       hasher,
       write,
@@ -45,8 +45,8 @@ impl<'a> HashObject<'a> {
           let content = self.provider.get_contents(p.to_string());
           let zipped = compressor::compress(content.as_bytes());
           self
-            .store
-            .write(hashed_key.as_str(), &zipped)
+            .object_manager
+            .write(hashed_key.as_str(), &self.object_type, &zipped)
             .expect("write hash");
         }
         return hashed_key;
@@ -61,13 +61,17 @@ impl<'a> HashObject<'a> {
 mod tests {
   use super::*;
   use crate::adapters::hasher;
+  use crate::adapters::object_manager::ObjectManager;
   use crate::infrastructures::memory_store::MemoryStore;
   use crate::infrastructures::test_content_provider::TestContentProvider;
 
   #[test]
   fn test_hash_object_sha1() {
     let store = MemoryStore::new();
-    store.write("test", b"test-body").expect("write test");
+    let object_manager = ObjectManager::new(&store);
+    object_manager
+      .write("test", "blob", b"test-body")
+      .expect("write test");
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
@@ -77,7 +81,7 @@ mod tests {
     let path = vec!["test".to_string()];
 
     let hash_object = HashObject::new(
-      &store,
+      &object_manager,
       &provider,
       hasher.as_ref(),
       write,
@@ -94,7 +98,10 @@ mod tests {
   #[test]
   fn test_hash_object_sha256() {
     let store = MemoryStore::new();
-    store.write("test", b"test-body").expect("write test");
+    let object_manager = ObjectManager::new(&store);
+    object_manager
+      .write("test", "blob", b"test-body")
+      .expect("write test");
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha256".to_string());
@@ -104,7 +111,7 @@ mod tests {
     let path = vec!["test".to_string()];
 
     let hash_object = HashObject::new(
-      &store,
+      &object_manager,
       &provider,
       hasher.as_ref(),
       write,
@@ -122,6 +129,7 @@ mod tests {
   #[test]
   fn test_hash_object_write() {
     let store = MemoryStore::new();
+    let object_manager = ObjectManager::new(&store);
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
@@ -131,7 +139,7 @@ mod tests {
     let path = vec!["test".to_string()];
 
     let hash_object = HashObject::new(
-      &store,
+      &object_manager,
       &provider,
       hasher.as_ref(),
       write,
@@ -145,8 +153,8 @@ mod tests {
     );
     assert_eq!(
       hash_object
-        .store
-        .read("5f8ab8d1d6ed50d5b2a6c8102bac4228b4e7f973")
+        .object_manager
+        .read("5f8ab8d1d6ed50d5b2a6c8102bac4228b4e7f973", "blob")
         .unwrap(),
       compressor::compress("test-body".as_bytes())
     )

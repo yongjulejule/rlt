@@ -1,3 +1,4 @@
+pub mod command_executor;
 pub mod compressor;
 pub mod data_store;
 pub mod hasher;
