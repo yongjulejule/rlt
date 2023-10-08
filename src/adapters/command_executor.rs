@@ -6,7 +6,10 @@ use crate::{
   infrastructures::{
     file_store::FileStore, local_filesystem_provider::LocalFilesystemProvider,
   },
-  use_cases::{cat_file::CatFile, hash_object::HashObject, init},
+  use_cases::{
+    cat_file::CatFile, hash_object::HashObject, init,
+    object_service::ObjectHelper,
+  },
 };
 
 use super::{
@@ -57,6 +60,7 @@ impl CommandExecutor {
     let provider = self.ctx.provider;
     let hasher = self.ctx.hasher;
     let object_manager = object_manager::ObjectManager::new(store.as_ref());
+    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
 
     match command {
       Commands::Init(init) => {
@@ -65,9 +69,8 @@ impl CommandExecutor {
       }
       Commands::HashObject(cli) => {
         let hash_object = HashObject::new(
-          &object_manager,
+          &object_service,
           provider.as_ref(),
-          hasher.as_ref(),
           cli.write,
           cli.object_type.unwrap_or("blob".to_string()),
           cli.path,
@@ -78,13 +81,8 @@ impl CommandExecutor {
         object,
         object_type,
       } => {
-        println!("CatFile: {:?}, {:?}", object, object_type);
-        let object_manager = object_manager::ObjectManager::new(store.as_ref());
-        let result = CatFile::new(&object_manager, object_type, object).run();
-        println!(
-          "===========CatFile result=========\n{}",
-          result.ok().unwrap()
-        )
+        let result = CatFile::new(&object_service, object_type, object).run();
+        print!("{}", result.ok().unwrap());
       }
       Commands::Add(add) => {
         println!("Adding {:?} ", Some(add.path_spec));

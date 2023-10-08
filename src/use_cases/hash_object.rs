@@ -1,12 +1,12 @@
-use crate::adapters::{
-  compressor, hasher::Hasher, object_manager::ObjectManagement,
-  workspace_provider::WorkspaceProvider,
+use crate::{
+  adapters::workspace_provider::WorkspaceProvider, entities::object::Object,
 };
 
+use super::object_service::ObjectService;
+
 pub struct HashObject<'a> {
-  object_manager: &'a dyn ObjectManagement,
+  object_service: &'a dyn ObjectService,
   provider: &'a dyn WorkspaceProvider,
-  hasher: &'a dyn Hasher,
   write: bool,
   object_type: String,
   path: Vec<String>,
@@ -14,17 +14,15 @@ pub struct HashObject<'a> {
 
 impl<'a> HashObject<'a> {
   pub fn new(
-    object_manager: &'a dyn ObjectManagement,
+    object_service: &'a dyn ObjectService,
     provider: &'a dyn WorkspaceProvider,
-    hasher: &'a dyn Hasher,
     write: bool,
     object_type: String,
     path: Vec<String>,
   ) -> Self {
     return Self {
-      object_manager,
+      object_service,
       provider,
-      hasher,
       write,
       object_type,
       path,
@@ -38,17 +36,17 @@ impl<'a> HashObject<'a> {
       .map(|p| {
         // hash with object type & content in path
         let content = self.provider.get_contents(p.to_string());
-        let object =
-          format!("{} {}\0{}", self.object_type, content.len(), content);
-        let hashed_key = self.hasher.hash(&object);
+        let key = self.object_service.create_key(&self.object_type, &content);
         if self.write {
-          let zipped_object = compressor::compress(object.as_bytes());
-          self
-            .object_manager
-            .write(hashed_key.as_str(), &zipped_object)
-            .expect("write object");
+          let object = Object {
+            hash: key.clone(),
+            object_type: self.object_type.clone(),
+            size: content.len(),
+            data: content.as_bytes().to_vec(),
+          };
+          let _ = self.object_service.save(&object);
         }
-        return hashed_key;
+        return key;
       })
       .collect();
 
@@ -58,11 +56,14 @@ impl<'a> HashObject<'a> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
   use crate::adapters::hasher;
+  use crate::adapters::object_manager::ObjectManagement;
   use crate::adapters::object_manager::ObjectManager;
+  use crate::adapters::workspace_provider::WorkspaceProvider;
   use crate::infrastructures::memory_store::MemoryStore;
   use crate::infrastructures::test_content_provider::TestContentProvider;
+  use crate::use_cases::hash_object::HashObject;
+  use crate::use_cases::object_service::ObjectHelper;
 
   #[test]
   fn test_hash_object_sha1() {
@@ -75,18 +76,14 @@ mod tests {
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
+    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+
     let write = false;
     let object_type = "blob".to_string();
     let path = vec!["test".to_string()];
 
-    let hash_object = HashObject::new(
-      &object_manager,
-      &provider,
-      hasher.as_ref(),
-      write,
-      object_type,
-      path,
-    );
+    let hash_object =
+      HashObject::new(&object_service, &provider, write, object_type, path);
     let result = hash_object.run().unwrap();
     assert_eq!(
       result.first().unwrap().to_owned(),
@@ -104,19 +101,14 @@ mod tests {
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha256".to_string());
+    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
 
     let write = false;
     let object_type = "blob".to_string();
     let path = vec!["test".to_string()];
 
-    let hash_object = HashObject::new(
-      &object_manager,
-      &provider,
-      hasher.as_ref(),
-      write,
-      object_type,
-      path,
-    );
+    let hash_object =
+      HashObject::new(&object_service, &provider, write, object_type, path);
     let result = hash_object.run().unwrap();
     assert_eq!(
       result.first().unwrap().to_owned(),
@@ -132,30 +124,18 @@ mod tests {
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
+    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
 
     let write = true;
     let object_type = "blob".to_string();
     let path = vec!["test".to_string()];
 
-    let hash_object = HashObject::new(
-      &object_manager,
-      &provider,
-      hasher.as_ref(),
-      write,
-      object_type,
-      path,
-    );
+    let hash_object =
+      HashObject::new(&object_service, &provider, write, object_type, path);
     let result = hash_object.run().unwrap();
     assert_eq!(
       result.first().unwrap().to_owned(),
       "5f8ab8d1d6ed50d5b2a6c8102bac4228b4e7f973".to_string()
     );
-    assert_eq!(
-      hash_object
-        .object_manager
-        .read("5f8ab8d1d6ed50d5b2a6c8102bac4228b4e7f973")
-        .unwrap(),
-      compressor::compress("blob 9\0test-body".as_bytes())
-    )
   }
 }

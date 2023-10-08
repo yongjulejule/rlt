@@ -1,50 +1,37 @@
-#[derive(Debug)]
-pub struct Add {
-  options: Vec<String>,
-  argument: Vec<String>,
+use crate::adapters::{
+  hasher::Hasher, object_manager::ObjectManagement,
+  workspace_provider::WorkspaceProvider,
+};
+
+pub struct Add<'a> {
+  pub root_path: &'a str,
+  object_manager: &'a dyn ObjectManagement,
+  provider: &'a dyn WorkspaceProvider,
+  hasher: &'a dyn Hasher,
 }
-
-pub trait SubCommand {
-  fn usage_message(&self) -> String;
-
-  fn new(args: &[String]) -> Self;
-
-  fn run(&self) -> Result<(), i32>;
-}
-
-impl SubCommand for Add {
-  fn usage_message(&self) -> String {
-    return format!("Usage: rlt add [-A|--all] [--chmod=(+|-)x] [-u|--update] <path-spec>\n");
-  }
-
-  fn new(args: &[String]) -> Self {
-    let mut options = Vec::new();
-    let mut argument = Vec::new();
-    for arg in args {
-      if arg.starts_with("-") {
-        options.push(arg.to_string());
-      } else {
-        argument.push(arg.to_string());
-      }
-    }
-    return Add { options, argument };
-  }
-
-  fn run(&self) -> Result<(), i32> {
-    println!("add {:?}", self.argument);
-    if self.argument.len() == 0 {
-      return Err(1);
-    }
-    return Ok(());
-  }
-}
-
-// add test
 
 #[cfg(test)]
-mod test {
+mod tests {
+  use crate::adapters::workspace_provider::WorkspaceProvider;
+  use crate::infrastructures::memory_store::MemoryStore;
+  use crate::infrastructures::test_content_provider::TestContentProvider;
+
   #[test]
-  fn test_usage() {
-    assert!(true)
+  fn test_add() {
+    let execution_path = ".";
+    let files = vec![
+      ("test.txt", "test-body"),
+      ("test/test.txt", "test-body-with-dir"),
+    ];
+    let mut provider = TestContentProvider::new();
+    files.into_iter().for_each(|(k, v)| {
+      provider.set_contents(k.to_string(), v.to_string());
+    });
+    let store = MemoryStore::new();
+
+    println!("execute add");
+    // Add::new()::run();
+
+    assert_eq!(true, false);
   }
 }

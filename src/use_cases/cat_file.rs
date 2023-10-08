@@ -1,24 +1,21 @@
-use crate::{
-  adapters::{compressor, object_manager::ObjectManagement},
-  use_cases::utils::object_helper::{
-    check_content_size, check_object_type, parse_content,
-  },
-};
+use crate::use_cases::utils::{check_content_size, check_object_type};
+
+use super::object_service::ObjectService;
 
 pub struct CatFile<'a> {
-  object_manager: &'a dyn ObjectManagement,
+  object_helper: &'a dyn ObjectService,
   object_type: String,
   object_hash: String,
 }
 
 impl<'a> CatFile<'a> {
   pub fn new(
-    object_manager: &'a dyn ObjectManagement,
+    object_helper: &'a dyn ObjectService,
     object_type: String,
     object_hash: String,
   ) -> Self {
     return Self {
-      object_manager,
+      object_helper,
       object_type,
       object_hash,
     };
@@ -26,24 +23,12 @@ impl<'a> CatFile<'a> {
 
   pub fn run(&self) -> Result<String, String> {
     println!("cat_file: {:?}", self.object_hash);
-    let data = self.object_manager.read(&self.object_hash)?;
-    let unzipped = compressor::decompress(&data);
-    if cfg!(debug_assertions) {
-      println!("====unzipped=====");
-      for byte in &unzipped {
-        match *byte {
-          0..=31 => print!("\\x{:02x}", byte),
-          127 => print!("\\x{:02x}", byte),
-          _ => print!("{}", *byte as char),
-        }
-      }
-    }
+    let object = self.object_helper.find(&self.object_hash)?;
 
-    let (content_type, content_length, content) = parse_content(&unzipped)?;
-    check_object_type(&content_type, &self.object_type)?;
-    check_content_size(content.len(), content_length)?;
+    check_object_type(&object.object_type, &self.object_type)?;
+    check_content_size(object.size, object.data.len())?;
 
-    String::from_utf8_lossy(&content)
+    String::from_utf8_lossy(&object.data)
       .parse()
       .map_err(|_| "invalid type".to_string())
   }
@@ -55,13 +40,15 @@ mod run_tests {
   use crate::{
     adapters::hasher,
     adapters::{
-      object_manager::ObjectManager, workspace_provider::WorkspaceProvider,
+      object_manager::{ObjectManagement, ObjectManager},
+      workspace_provider::WorkspaceProvider,
     },
     infrastructures::{
       memory_store::MemoryStore, test_content_provider::TestContentProvider,
     },
-    use_cases::hash_object::HashObject,
+    use_cases::{hash_object::HashObject, object_service::ObjectHelper},
   };
+
   #[test]
   fn test_cat_file() {
     let test_key = "test-key";
@@ -69,26 +56,25 @@ mod run_tests {
     let store = Box::new(MemoryStore::new());
     let object_manager = ObjectManager::new(store.as_ref());
     let mut provider = TestContentProvider::new();
+    let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
+    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
     provider.set_contents(test_key.to_string(), test_content.to_string());
 
-    let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
     let hash_object = HashObject::new(
-      &object_manager,
+      &object_service,
       &provider,
-      hasher.as_ref(),
       true,
       "blob".to_string(),
       vec![test_key.to_string()],
     );
     let hash = hash_object.run().unwrap().pop().unwrap();
     println!("hash: {:?}", hash);
-    // read data using store.read() directly
     println!(
       "read data: {:?}",
       String::from_utf8_lossy(&object_manager.read(&hash).unwrap())
     );
 
-    let cat_file = CatFile::new(&object_manager, "blob".to_string(), hash);
+    let cat_file = CatFile::new(&object_service, "blob".to_string(), hash);
     let content = cat_file.run().unwrap();
     assert_eq!(content, test_content.to_string());
   }

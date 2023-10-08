@@ -8,6 +8,7 @@ mod adapters;
 mod cli;
 mod infrastructures;
 mod use_cases;
+mod entities;
 
 fn main() {
   let args = Cli::parse();
