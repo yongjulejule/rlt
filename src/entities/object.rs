@@ -6,6 +6,17 @@ pub struct Object {
   pub size: usize,
 }
 
+impl Object {
+  pub fn new(object_type: &str, hash: &str, data: &[u8], size: usize) -> Self {
+    Self {
+      object_type: object_type.to_string(),
+      hash: hash.to_string(),
+      data: data.to_vec(),
+      size,
+    }
+  }
+}
+
 pub struct BlobObject {
   pub object_type: String,
   pub data: Vec<u8>,

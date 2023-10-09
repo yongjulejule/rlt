@@ -38,12 +38,12 @@ impl<'a> HashObject<'a> {
         let content = self.provider.get_contents(p.to_string());
         let key = self.object_service.create_key(&self.object_type, &content);
         if self.write {
-          let object = Object {
-            hash: key.clone(),
-            object_type: self.object_type.clone(),
-            size: content.len(),
-            data: content.as_bytes().to_vec(),
-          };
+          let object = Object::new(
+            &key,
+            &self.object_type,
+            content.as_bytes(),
+            content.len(),
+          );
           let _ = self.object_service.save(&object);
         }
         return key;

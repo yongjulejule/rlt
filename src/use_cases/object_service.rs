@@ -113,6 +113,36 @@ mod tests {
   use super::*;
 
   #[test]
+  fn create_key() {
+    let test_data = "test-data".as_bytes().to_vec();
+    let test_object = Object {
+      object_type: "blob".to_string(),
+      hash: "test-hash".to_string(),
+      data: test_data.clone(),
+      size: test_data.len(),
+    };
+    let memory_store = MemoryStore::new();
+    let object_manager = ObjectManager::new(&memory_store);
+
+    let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
+
+    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let key = object_service.create_key(
+      &test_object.object_type,
+      &String::from_utf8_lossy(&test_object.data),
+    );
+
+    let result = hasher.hash(&format!(
+      "{} {}\0{}",
+      test_object.object_type,
+      test_object.size,
+      String::from_utf8_lossy(&test_object.data)
+    ));
+
+    assert_eq!(key, result);
+  }
+
+  #[test]
   fn save() {
     let test_data = "test-data".as_bytes().to_vec();
     let test_object = Object {
