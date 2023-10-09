@@ -99,7 +99,7 @@ DIRC (4bytes) version 2 (4bytes), entries: 4 (32-bit integer),
 
 ### Cache tree
 
-[[git-index-example]]
+[git-index-example](./git-index-example)
 
 <details><summary> 번역 </summary> 
 === 캐시 트리
