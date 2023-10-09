@@ -1,6 +1,6 @@
 use crate::{
   adapters::{compressor, hasher::Hasher, object_manager::ObjectManagement},
-  entities::object::Object,
+  entities::object::{CommitObject, Object},
 };
 
 pub trait ObjectService {
@@ -61,7 +61,7 @@ impl<'a> ObjectService for ObjectHelper<'a> {
       }
     }
     let (content_type, content_length, content) =
-      self.parse_object(&unzipped)?;
+      ObjectHelper::parse_object(&unzipped)?;
 
     Ok(Object {
       object_type: content_type,
@@ -77,10 +77,7 @@ impl<'a> ObjectService for ObjectHelper<'a> {
 }
 
 impl<'a> ObjectHelper<'a> {
-  fn parse_object(
-    &self,
-    content: &[u8],
-  ) -> Result<(String, usize, Vec<u8>), String> {
+  fn parse_object(content: &[u8]) -> Result<(String, usize, Vec<u8>), String> {
     let parts: Vec<&[u8]> =
       content.splitn(3, |&c| c == b' ' || c == b'\0').collect();
     if parts.len() != 3 {
