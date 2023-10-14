@@ -1,11 +1,27 @@
+use std::collections::BTreeMap;
+
 #[derive(Debug, Clone)]
 pub struct Index {
   pub signature: String, // DIRC
   pub version: String,
   pub entries_count: u32,
-  pub entries: Vec<IndexEntry>,
+  pub entries: BTreeMap<String, IndexEntry>,
   pub extensions: Vec<IndexExtension>,
   pub checksum: Vec<u8>,
+}
+
+impl Index {
+  pub fn new() -> Self {
+    let index = Index {
+      signature: "DIRC".to_string(),
+      version: "2".to_string(),
+      entries_count: 0,
+      entries: BTreeMap::new(),
+      extensions: Vec::new(),
+      checksum: Vec::new(),
+    };
+    index
+  }
 }
 
 #[derive(Debug, Clone)]
@@ -26,8 +42,24 @@ pub struct IndexEntry {
 }
 
 #[derive(Debug, Clone)]
-struct IndexExtension {
+pub struct IndexExtension {
   pub signature: String,
   pub size: u32,
   pub data: Vec<u8>,
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_index_new() {
+    let index = Index::new();
+    assert_eq!(index.signature, "DIRC");
+    assert_eq!(index.version, "2");
+    assert_eq!(index.entries_count, 0);
+    assert_eq!(index.entries.len(), 0);
+    assert_eq!(index.extensions.len(), 0);
+    assert_eq!(index.checksum.len(), 0);
+  }
 }

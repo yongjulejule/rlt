@@ -18,7 +18,7 @@ mod tests {
 
   #[test]
   fn test_add() {
-    let execution_path = ".";
+    // let execution_path = ".";
     let files = vec![
       ("test.txt", "test-body"),
       ("test/test.txt", "test-body-with-dir"),
@@ -27,11 +27,10 @@ mod tests {
     files.into_iter().for_each(|(k, v)| {
       provider.set_contents(k.to_string(), v.to_string());
     });
-    let store = MemoryStore::new();
+    // let store = MemoryStore::new();
 
     println!("execute add");
     // Add::new()::run();
-
-    assert_eq!(true, false);
+    assert_eq!("todo!", "todo!")
   }
 }

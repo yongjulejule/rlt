@@ -1,6 +1,6 @@
 use crate::{
   adapters::{compressor, hasher::Hasher, object_manager::ObjectManagement},
-  entities::object::{CommitObject, Object},
+  entities::object::Object,
 };
 
 pub trait ObjectService {
