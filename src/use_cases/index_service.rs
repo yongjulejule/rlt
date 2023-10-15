@@ -41,51 +41,39 @@ impl IndexServiceImpl {
 
     let mut start = 12;
     for _i in 0..entries_count {
-      let ctime =
-        i32::from_be_bytes(data[start..start + 4].try_into().unwrap());
-      let ctime_nsec =
-        i32::from_be_bytes(data[start + 4..start + 8].try_into().unwrap());
-      let mtime =
-        i32::from_be_bytes(data[start + 8..start + 12].try_into().unwrap());
-      let mtime_nsec =
-        i32::from_be_bytes(data[start + 12..start + 16].try_into().unwrap());
-      let dev =
-        u32::from_be_bytes(data[start + 16..start + 20].try_into().unwrap());
-      let ino =
-        u32::from_be_bytes(data[start + 20..start + 24].try_into().unwrap());
-      let mode =
-        u32::from_be_bytes(data[start + 24..start + 28].try_into().unwrap());
+      let ctime = parse_i32(&data, start, CTIME_OFFSET)?;
+      let ctime_nsec = parse_i32(&data, start, CTIME_NSEC_OFFSET)?;
+      let mtime = parse_i32(&data, start, MTIME_OFFSET)?;
+      let mtime_nsec = parse_i32(&data, start, MTIME_NSEC_OFFSET)?;
+      let dev = parse_u32(&data, start, DEV_OFFSET)?;
+      let ino = parse_u32(&data, start, INO_OFFSET)?;
+      let mode = parse_u32(&data, start, MODE_OFFSET)?;
       //  check validity later
       // valid mode: 0000 0000 0000 0000 {1000 | 1010 | 1110} 000{111101101(0755) | 110100100(0644) | 000000000(links)}
-      let uid =
-        u32::from_be_bytes(data[start + 28..start + 32].try_into().unwrap());
-      let gid =
-        u32::from_be_bytes(data[start + 32..start + 36].try_into().unwrap());
-      let size =
-        u32::from_be_bytes(data[start + 36..start + 40].try_into().unwrap());
-      let hash =
-        String::from_utf8_lossy(&data[start + 40..start + 60]).to_string();
-      let flags =
-        u16::from_be_bytes(data[start + 60..start + 62].try_into().unwrap());
+      let uid = parse_u32(&data, start, UID_OFFSET)?;
+      let gid = parse_u32(&data, start, GID_OFFSET)?;
+      let size = parse_u32(&data, start, SIZE_OFFSET)?;
+
+      let hash = String::from_utf8_lossy(
+        &data[start + HASH_OFFSET..start + HASH_OFFSET + 20],
+      )
+      .to_string();
+      let flags = parse_u16(&data, start, FLAGS_OFFSET)?;
 
       let name_length = if (flags & 0xfff) >= 0xfff {
-        data[start + 62..]
+        data[start + NAME_OFFSET..]
           .iter()
           .position(|&x| x == 0)
-          .ok_or("Fail")?
+          .ok_or("Invalid file length")?
           - start
-          + 62
+          + NAME_OFFSET
       } else {
         (flags & 0xfff).into()
       };
-
       let name = String::from_utf8_lossy(
-        &data[start + 62..start + 62 + name_length as usize],
+        &data[start + NAME_OFFSET..start + NAME_OFFSET + name_length as usize],
       )
       .to_string();
-
-      // let name =
-      //   String::from_utf8_lossy(&data[start + 62..start + 72]).to_string();
 
       let entry = IndexEntry {
         ctime: ctime as i64,
@@ -103,7 +91,7 @@ impl IndexServiceImpl {
         name,
       };
       entries.insert(entry.name.clone(), entry.clone());
-      start += 62 + name_length as usize;
+      start += ENTRY_FIXED_SIZE + name_length as usize;
     }
 
     Ok(Self {
@@ -117,14 +105,43 @@ impl IndexServiceImpl {
       },
     })
   }
+}
 
-  fn serialize(&self) -> Result<String, String> {
-    todo!()
-  }
+const ENTRY_START_OFFSET: usize = 12;
+const CTIME_OFFSET: usize = 0;
+const CTIME_NSEC_OFFSET: usize = 4;
+const MTIME_OFFSET: usize = 8;
+const MTIME_NSEC_OFFSET: usize = 12;
+const DEV_OFFSET: usize = 16;
+const INO_OFFSET: usize = 20;
+const MODE_OFFSET: usize = 24;
+const UID_OFFSET: usize = 28;
+const GID_OFFSET: usize = 32;
+const SIZE_OFFSET: usize = 36;
+const HASH_OFFSET: usize = 40;
+const FLAGS_OFFSET: usize = 60;
+const NAME_OFFSET: usize = 62;
+const ENTRY_FIXED_SIZE: usize = 62;
 
-  fn deserialize(&self) -> Result<Index, String> {
-    todo!()
-  }
+fn parse_i32(data: &[u8], start: usize, offset: usize) -> Result<i32, String> {
+  data[start + offset..start + offset + 4]
+    .try_into()
+    .map(i32::from_be_bytes)
+    .map_err(|_| "Failed to parse i32".to_string())
+}
+
+fn parse_u32(data: &[u8], start: usize, offset: usize) -> Result<u32, String> {
+  data[start + offset..start + offset + 4]
+    .try_into()
+    .map(u32::from_be_bytes)
+    .map_err(|_| "Failed to parse u32".to_string())
+}
+
+fn parse_u16(data: &[u8], start: usize, offset: usize) -> Result<u16, String> {
+  data[start + offset..start + offset + 2]
+    .try_into()
+    .map(u16::from_be_bytes)
+    .map_err(|_| "Failed to parse u16".to_string())
 }
 
 impl IndexService for IndexServiceImpl {
