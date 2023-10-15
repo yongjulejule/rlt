@@ -34,10 +34,10 @@ impl IndexServiceImpl {
   pub fn from_raw(data: &[u8]) -> Result<Self, String> {
     let mut entries: BTreeMap<String, IndexEntry> = BTreeMap::new();
     let signature = String::from_utf8_lossy(&data[0..4]).to_string();
-    // convert [00, 00, 00, 02] -> 2
     let version =
       u32::from_be_bytes(data[4..8].try_into().unwrap()).to_string();
     let entries_count = u32::from_be_bytes(data[8..12].try_into().unwrap());
+    println!("entries_count: {}", entries_count);
 
     let mut start = 12;
     for _i in 0..entries_count {
@@ -70,10 +70,12 @@ impl IndexServiceImpl {
       } else {
         (flags & 0xfff).into()
       };
+      println!("name_length: {}", name_length);
       let name = String::from_utf8_lossy(
         &data[start + NAME_OFFSET..start + NAME_OFFSET + name_length as usize],
       )
       .to_string();
+      println!("name: {}", name);
 
       let entry = IndexEntry {
         ctime: ctime as i64,
@@ -91,7 +93,12 @@ impl IndexServiceImpl {
         name,
       };
       entries.insert(entry.name.clone(), entry.clone());
-      start += ENTRY_FIXED_SIZE + name_length as usize;
+      let pad = if ENTRY_FIXED_SIZE + name_length as usize % 8 == 0 {
+        0
+      } else {
+        8 - (ENTRY_FIXED_SIZE + name_length as usize) % 8
+      };
+      start += ENTRY_FIXED_SIZE + name_length as usize + pad;
     }
 
     Ok(Self {

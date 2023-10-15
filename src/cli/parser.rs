@@ -54,6 +54,7 @@ pub enum Commands {
     #[arg(value_name = "object")]
     object: String,
   },
+  LsFiles {},
   /// Clones repos
   #[command(arg_required_else_help = true)]
   Clone {

@@ -7,7 +7,7 @@ use crate::{
     file_store::FileStore, local_filesystem_provider::LocalFilesystemProvider,
   },
   use_cases::{
-    cat_file::CatFile, hash_object::HashObject, init,
+    cat_file::CatFile, hash_object::HashObject, init, ls_files::LsFiles,
     object_service::ObjectHelper,
   },
 };
@@ -83,6 +83,10 @@ impl CommandExecutor {
       } => {
         let result = CatFile::new(&object_service, object_type, object).run();
         print!("{}", result.ok().unwrap());
+      }
+      Commands::LsFiles {} => {
+        let result = LsFiles::new(store.as_ref()).run();
+        println!("{}", result.ok().unwrap().join("\n"));
       }
       Commands::Add(add) => {
         println!("Adding {:?} ", Some(add.path_spec));
