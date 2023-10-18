@@ -5,4 +5,5 @@ pub mod index_service;
 pub mod init;
 pub mod ls_files;
 pub mod object_service;
+pub mod pathspec;
 pub mod utils;
