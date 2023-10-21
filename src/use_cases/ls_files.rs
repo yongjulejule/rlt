@@ -34,8 +34,6 @@ mod tests {
     let ls_files = LsFiles::new(store.as_ref());
     let result: Vec<String> = ls_files.run().unwrap();
 
-    // let index_service: IndexService = IndexServiceImpl::from_raw(&raw).unwrap();
-    // let index = index_service.get_index();
     assert_eq!(result.len(), 1);
     assert_eq!(result[0], "a/b".to_string());
   }
