@@ -1,8 +1,7 @@
 use crate::{
   adapters::workspace_provider::WorkspaceProvider, entities::object::Object,
+  use_cases::core::object_service::ObjectService,
 };
-
-use super::object_service::ObjectService;
 
 pub struct HashObject<'a> {
   object_service: &'a dyn ObjectService,
@@ -62,8 +61,8 @@ mod tests {
   use crate::adapters::workspace_provider::WorkspaceProvider;
   use crate::infrastructures::memory_store::MemoryStore;
   use crate::infrastructures::test_content_provider::TestContentProvider;
-  use crate::use_cases::hash_object::HashObject;
-  use crate::use_cases::object_service::ObjectHelper;
+  use crate::use_cases::commands::hash_object::HashObject;
+  use crate::use_cases::core::object_service::ObjectServiceImpl;
 
   #[test]
   fn test_hash_object_sha1() {
@@ -76,7 +75,8 @@ mod tests {
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
 
     let write = false;
     let object_type = "blob".to_string();
@@ -101,7 +101,8 @@ mod tests {
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha256".to_string());
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
 
     let write = false;
     let object_type = "blob".to_string();
@@ -124,7 +125,8 @@ mod tests {
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
 
     let write = true;
     let object_type = "blob".to_string();

@@ -10,12 +10,12 @@ pub trait ObjectService {
   fn delete(&self) -> Result<(), String>;
 }
 
-pub struct ObjectHelper<'a> {
+pub struct ObjectServiceImpl<'a> {
   object_manager: &'a dyn ObjectManagement,
   hasher: &'a dyn Hasher,
 }
 
-impl<'a> ObjectHelper<'a> {
+impl<'a> ObjectServiceImpl<'a> {
   pub fn new(
     object_manager: &'a dyn ObjectManagement,
     hasher: &'a dyn Hasher,
@@ -27,7 +27,7 @@ impl<'a> ObjectHelper<'a> {
   }
 }
 
-impl<'a> ObjectService for ObjectHelper<'a> {
+impl<'a> ObjectService for ObjectServiceImpl<'a> {
   fn create_key(&self, object_type: &str, content: &str) -> String {
     let object = format!("{} {}\0{}", object_type, content.len(), content);
     self.hasher.hash(&object)
@@ -61,7 +61,7 @@ impl<'a> ObjectService for ObjectHelper<'a> {
       }
     }
     let (content_type, content_length, content) =
-      ObjectHelper::parse_object(&unzipped)?;
+      ObjectServiceImpl::parse_object(&unzipped)?;
 
     Ok(Object {
       object_type: content_type,
@@ -76,7 +76,7 @@ impl<'a> ObjectService for ObjectHelper<'a> {
   }
 }
 
-impl<'a> ObjectHelper<'a> {
+impl<'a> ObjectServiceImpl<'a> {
   fn parse_object(content: &[u8]) -> Result<(String, usize, Vec<u8>), String> {
     let parts: Vec<&[u8]> =
       content.splitn(3, |&c| c == b' ' || c == b'\0').collect();
@@ -123,7 +123,8 @@ mod tests {
 
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
     let key = object_service.create_key(
       &test_object.object_type,
       &String::from_utf8_lossy(&test_object.data),
@@ -153,7 +154,8 @@ mod tests {
 
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
     let key = object_service.save(&test_object).unwrap();
 
     let object = object_service.find(key.as_str()).unwrap();
@@ -185,7 +187,8 @@ mod tests {
 
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
     let object = object_service.find(test_object.hash.as_str()).unwrap();
 
     assert_eq!(object, test_object);

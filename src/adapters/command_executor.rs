@@ -8,7 +8,7 @@ use crate::{
   },
   use_cases::{
     cat_file::CatFile, hash_object::HashObject, init, ls_files::LsFiles,
-    object_service::ObjectHelper,
+    object_service::ObjectServiceImpl,
   },
 };
 
@@ -60,7 +60,8 @@ impl CommandExecutor {
     let provider = self.ctx.provider;
     let hasher = self.ctx.hasher;
     let object_manager = object_manager::ObjectManager::new(store.as_ref());
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
 
     match command {
       Commands::Init(init) => {

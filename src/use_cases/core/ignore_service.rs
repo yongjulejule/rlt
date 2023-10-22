@@ -1,6 +1,6 @@
 use super::pathspec::is_matched;
 
-struct IgnoreService {
+pub struct IgnoreService {
   ignore_list: Vec<String>,
   negated_ignore_list: Vec<String>,
 }
@@ -17,19 +17,17 @@ impl IgnoreService {
     let mut ignore_list: Vec<String> = Vec::new();
     let mut negated_ignore_list: Vec<String> = Vec::new();
 
-    for line in raw.lines() {
+    raw.lines().for_each(|line| {
       if line.starts_with("#") || line.is_empty() {
-        continue;
+        return;
       }
-
       let trimmed_line = line.trim_end();
-
       if trimmed_line.starts_with("!") {
         negated_ignore_list.push(trimmed_line[1..].to_string());
       } else {
         ignore_list.push(trimmed_line.to_string());
       }
-    }
+    });
 
     Ok(Self::new(ignore_list, negated_ignore_list))
   }

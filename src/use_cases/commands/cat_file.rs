@@ -1,6 +1,7 @@
-use crate::use_cases::utils::{check_content_size, check_object_type};
-
-use super::object_service::ObjectService;
+use crate::use_cases::{
+  commands::utils::{check_content_size, check_object_type},
+  core::object_service::ObjectService,
+};
 
 pub struct CatFile<'a> {
   object_service: &'a dyn ObjectService,
@@ -40,7 +41,7 @@ mod run_tests {
   use crate::{
     adapters::hasher, adapters::object_manager::ObjectManager,
     entities::object::Object, infrastructures::memory_store::MemoryStore,
-    use_cases::object_service::ObjectHelper,
+    use_cases::core::object_service::ObjectServiceImpl,
   };
 
   #[test]
@@ -50,7 +51,8 @@ mod run_tests {
     let store = Box::new(MemoryStore::new());
     let object_manager = ObjectManager::new(store.as_ref());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
-    let object_service = ObjectHelper::new(&object_manager, hasher.as_ref());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
     let key = object_service.create_key("blob", test_content);
     let _ = object_service.save(&Object::new(
       "blob",

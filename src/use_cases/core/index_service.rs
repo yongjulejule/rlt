@@ -209,7 +209,7 @@ impl IndexService for IndexServiceImpl {
 mod tests {
   use std::fs;
 
-  use crate::use_cases::index_service::{IndexService, IndexServiceImpl};
+  use crate::use_cases::core::index_service::{IndexService, IndexServiceImpl};
 
   const TEST_INDEX: &str = "./test/fixtures/index";
 

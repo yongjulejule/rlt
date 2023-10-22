@@ -1,6 +1,8 @@
-use crate::adapters::data_store::DataStore;
-
-use super::index_service::{IndexService, IndexServiceImpl};
+use crate::use_cases::core::index_service::IndexService;
+use crate::{
+  adapters::data_store::DataStore,
+  use_cases::core::index_service::IndexServiceImpl,
+};
 
 pub struct LsFiles<'a> {
   store: &'a dyn DataStore,
@@ -20,7 +22,8 @@ impl<'a> LsFiles<'a> {
 #[cfg(test)]
 mod tests {
   use crate::{
-    infrastructures::file_store::FileStore, use_cases::ls_files::LsFiles,
+    infrastructures::file_store::FileStore,
+    use_cases::commands::ls_files::LsFiles,
   };
 
   const TEST_INDEX: &str = "./test/fixtures/index";
