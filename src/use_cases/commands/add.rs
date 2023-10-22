@@ -12,6 +12,8 @@ pub struct Add<'a> {
 
 #[cfg(test)]
 mod tests {
+  use log::info;
+
   use crate::adapters::workspace_provider::WorkspaceProvider;
   use crate::infrastructures::memory_store::MemoryStore;
   use crate::infrastructures::test_content_provider::TestContentProvider;
@@ -29,7 +31,7 @@ mod tests {
     });
     // let store = MemoryStore::new();
 
-    println!("execute add");
+    info!("execute add");
     // Add::new()::run();
     assert_eq!("todo!", "todo!")
   }

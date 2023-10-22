@@ -1,3 +1,5 @@
+use log::trace;
+
 use crate::use_cases::core::ignore_service::IgnoreService;
 
 pub struct CheckIgnore<'a> {
@@ -17,7 +19,7 @@ impl<'a> CheckIgnore<'a> {
   }
 
   pub fn run(&self) -> Vec<String> {
-    println!("CheckIgnore: {:?}", self.paths);
+    trace!("CheckIgnore: {:?}", self.paths);
     let ignored: Vec<String> = self
       .paths
       .iter()

@@ -1,3 +1,5 @@
+use log::trace;
+
 use super::pathspec::is_matched;
 
 pub trait IgnoreService {
@@ -36,8 +38,8 @@ impl IgnoreServiceImpl {
         ignore_list.push(trimmed_line.to_string());
       }
     });
-    println!("ignore_list: {:?}", ignore_list);
-    println!("negated_ignore_list: {:?}", negated_ignore_list);
+    trace!("ignore_list: {:?}", ignore_list);
+    trace!("negated_ignore_list: {:?}", negated_ignore_list);
 
     Ok(Self::new(ignore_list, negated_ignore_list))
   }

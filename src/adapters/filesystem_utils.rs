@@ -20,6 +20,8 @@ pub fn visit_dirs(dir: &Path, cb: &mut dyn FnMut(&DirEntry)) -> io::Result<()> {
 
 #[cfg(test)]
 mod test {
+  use log::info;
+
   use super::*;
   use std::path::PathBuf;
 
@@ -33,7 +35,7 @@ mod test {
     };
     let dir = PathBuf::from("./src");
     visit_dirs(&dir, cb).unwrap();
-    println!("{:?}", files);
+    info!("{:?}", files);
     // assert_eq!(files.len(), 2);
     // assert_eq!(files[0], "test.txt");
     // assert_eq!(files[1], "test2.txt");

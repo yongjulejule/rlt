@@ -1,5 +1,7 @@
 use std::ffi::OsStr;
 
+use log::trace;
+
 use crate::{
   adapters::object_manager,
   cli::parser::Commands,
@@ -41,13 +43,20 @@ impl CommandExecutionContext {
   }
 
   pub fn setup(execution_path: &str, work_tree: &str, git_dir: &str) -> Self {
+    trace!(
+      "setup:\n\texecution_path: [{}]\n\twork_tree: [{}]\n\tgit_dir: [{}]",
+      execution_path,
+      work_tree,
+      git_dir
+    );
+
     let store: Box<dyn DataStore> =
       Box::new(FileStore::new(&vec![execution_path, git_dir].join("/")));
     let provider: Box<dyn WorkspaceProvider> = Box::new(
       LocalFilesystemProvider::new(&vec![execution_path, work_tree].join("/")),
     ); // [execution_path, work_tree].join("/")
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
-    return Self::new(store, provider, hasher);
+    Self::new(store, provider, hasher)
   }
 }
 
@@ -72,7 +81,7 @@ impl CommandExecutor {
 
     match command {
       Commands::Init(init) => {
-        println!("Initializing repository at {:?}", init);
+        trace!("Initializing repository at {:?}", init);
         init::run(store.as_ref());
         Ok(())
       }
@@ -85,7 +94,8 @@ impl CommandExecutor {
           cli.object_type.unwrap_or("blob".to_string()),
           cli.path,
         );
-        println!("Hash Object: {:?}", hash_object.run().unwrap());
+        let result = hash_object.run()?;
+        trace!("Hash Object: {:?}", result);
         Ok(())
       }
 
@@ -94,33 +104,33 @@ impl CommandExecutor {
         object_type,
       } => {
         let result = CatFile::new(&object_service, object_type, object).run();
-        print!("{}", result.ok().unwrap());
+        trace!("{}", result.ok().unwrap());
         Ok(())
       }
 
       Commands::LsFiles {} => {
         let result = LsFiles::new(store.as_ref()).run();
-        println!("{}", result.ok().unwrap().join("\n"));
+        trace!("{}", result.ok().unwrap().join("\n"));
         Ok(())
       }
 
       Commands::CheckIgnore { paths } => {
-        println!("Checking ignore for {:?}", paths);
+        trace!("Checking ignore for {:?}", paths);
 
         let result = CheckIgnore::new(&ignore_service, paths).run();
         if !result.len() == 0 {
           return Err("Found ignored path".to_string());
         }
-        println!("ignored : {:?}", result);
+        trace!("ignored : {:?}", result);
         Ok(())
       }
 
       Commands::Add(add) => {
-        println!("Adding {:?} ", Some(add.path_spec));
+        trace!("Adding {:?} ", Some(add.path_spec));
         Ok(())
       }
       Commands::Clone { remote } => {
-        println!("Cloning {remote}");
+        trace!("Cloning {remote}");
         Ok(())
       }
       Commands::Diff {
@@ -146,7 +156,7 @@ impl CommandExecutor {
           .map(|s| s.to_str().unwrap())
           .unwrap_or("worktree");
         let path = path.as_deref().unwrap_or_else(|| OsStr::new(""));
-        println!(
+        trace!(
           "Diffing {}..{} {} (color={})",
           base,
           head,
@@ -156,11 +166,11 @@ impl CommandExecutor {
         Ok(())
       }
       Commands::Push { remote } => {
-        println!("Pushing to {remote}");
+        trace!("Pushing to {remote}");
         Ok(())
       }
       Commands::External(cli) => {
-        println!("Calling out to {:?} with {:?}", &cli[0], &cli[1..]);
+        trace!("Calling out to {:?} with {:?}", &cli[0], &cli[1..]);
         Ok(())
       }
     }

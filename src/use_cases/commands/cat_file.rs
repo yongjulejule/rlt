@@ -1,3 +1,5 @@
+use log::trace;
+
 use crate::use_cases::{
   commands::utils::{check_content_size, check_object_type},
   core::object_service::ObjectService,
@@ -23,7 +25,7 @@ impl<'a> CatFile<'a> {
   }
 
   pub fn run(&self) -> Result<String, String> {
-    println!("cat_file: {:?}", self.object_hash);
+    trace!("cat_file: {:?}", self.object_hash);
     let object = self.object_service.find(&self.object_hash)?;
 
     check_object_type(&object.object_type, &self.object_type)?;
@@ -37,6 +39,8 @@ impl<'a> CatFile<'a> {
 
 #[cfg(test)]
 mod run_tests {
+  use log::info;
+
   use super::*;
   use crate::{
     adapters::hasher, adapters::object_manager::ObjectManager,
@@ -65,7 +69,7 @@ mod run_tests {
     let cat_file = CatFile::new(&object_service, "blob".to_string(), key);
     let content = cat_file.run();
     if content.is_err() {
-      println!("error: {:?}", content);
+      info!("error: {:?}", content);
       assert!(false);
     }
     assert_eq!(content.unwrap(), test_content.to_string());

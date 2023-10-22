@@ -1,5 +1,7 @@
 use std::{collections::BTreeMap, os::unix::prelude::MetadataExt};
 
+use log::trace;
+
 use crate::entities::index::{Index, IndexEntry};
 
 pub trait IndexService {
@@ -37,7 +39,7 @@ impl IndexServiceImpl {
     let version =
       u32::from_be_bytes(data[4..8].try_into().unwrap()).to_string();
     let entries_count = u32::from_be_bytes(data[8..12].try_into().unwrap());
-    println!("entries_count: {}", entries_count);
+    trace!("entries_count: {}", entries_count);
 
     let mut start = 12;
     for _i in 0..entries_count {
@@ -70,12 +72,12 @@ impl IndexServiceImpl {
       } else {
         (flags & 0xfff).into()
       };
-      println!("name_length: {}", name_length);
+      trace!("name_length: {}", name_length);
       let name = String::from_utf8_lossy(
         &data[start + NAME_OFFSET..start + NAME_OFFSET + name_length as usize],
       )
       .to_string();
-      println!("name: {}", name);
+      trace!("name: {}", name);
 
       let entry = IndexEntry {
         ctime: ctime as i64,
@@ -209,6 +211,8 @@ impl IndexService for IndexServiceImpl {
 mod tests {
   use std::fs;
 
+  use log::info;
+
   use crate::use_cases::core::index_service::{IndexService, IndexServiceImpl};
 
   const TEST_INDEX: &str = "./test/fixtures/index";
@@ -219,7 +223,7 @@ mod tests {
 
     let entry = index_service.create_entry_from_file("test-key", TEST_INDEX);
 
-    println!("{:?}", entry);
+    info!("{:?}", entry);
     assert_eq!(entry.is_ok(), true);
     assert_eq!(entry.unwrap().name, TEST_INDEX);
   }
@@ -244,7 +248,7 @@ mod tests {
     let index_service = IndexServiceImpl::from_raw(&raw).unwrap();
     let index = index_service.get_index();
 
-    println!("{:?}", index);
+    info!("{:?}", index);
 
     assert_eq!(index.entries_count, 1);
     assert_eq!(index.entries.get("a/b").is_some(), true);

@@ -1,3 +1,5 @@
+use log::trace;
+
 use crate::{
   adapters::{compressor, hasher::Hasher, object_manager::ObjectManagement},
   entities::object::Object,
@@ -50,14 +52,11 @@ impl<'a> ObjectService for ObjectServiceImpl<'a> {
   fn find(&self, key: &str) -> Result<Object, String> {
     let data = self.object_manager.read(key)?;
     let unzipped = compressor::decompress(&data);
-    if cfg!(debug_assertions) {
-      println!("====unzipped=====");
-      for byte in &unzipped {
-        match *byte {
-          0..=31 => print!("\\x{:02x}", byte),
-          127 => print!("\\x{:02x}", byte),
-          _ => print!("{}", *byte as char),
-        }
+    for byte in &unzipped {
+      match *byte {
+        0..=31 => trace!("\\x{:02x}", byte),
+        127 => trace!("\\x{:02x}", byte),
+        _ => trace!("{}", *byte as char),
       }
     }
     let (content_type, content_length, content) =
