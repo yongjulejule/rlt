@@ -7,8 +7,10 @@ use crate::{
     file_store::FileStore, local_filesystem_provider::LocalFilesystemProvider,
   },
   use_cases::{
-    cat_file::CatFile, hash_object::HashObject, init, ls_files::LsFiles,
-    object_service::ObjectServiceImpl,
+    commands::{
+      cat_file::CatFile, hash_object::HashObject, init, ls_files::LsFiles,
+    },
+    core::object_service::ObjectServiceImpl,
   },
 };
 
