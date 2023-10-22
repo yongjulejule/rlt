@@ -56,8 +56,8 @@ impl<'a> HashObject<'a> {
 #[cfg(test)]
 mod tests {
   use crate::adapters::hasher;
-  use crate::adapters::object_manager::ObjectManagement;
   use crate::adapters::object_manager::ObjectManager;
+  use crate::adapters::object_manager::ObjectManagerImpl;
   use crate::adapters::workspace_provider::WorkspaceProvider;
   use crate::infrastructures::memory_store::MemoryStore;
   use crate::infrastructures::test_content_provider::TestContentProvider;
@@ -67,7 +67,7 @@ mod tests {
   #[test]
   fn test_hash_object_sha1() {
     let store = MemoryStore::new();
-    let object_manager = ObjectManager::new(&store);
+    let object_manager = ObjectManagerImpl::new(&store);
     object_manager
       .write("test", b"test-body")
       .expect("write test");
@@ -94,7 +94,7 @@ mod tests {
   #[test]
   fn test_hash_object_sha256() {
     let store = MemoryStore::new();
-    let object_manager = ObjectManager::new(&store);
+    let object_manager = ObjectManagerImpl::new(&store);
     object_manager
       .write("test", b"test-body")
       .expect("write test");
@@ -121,7 +121,7 @@ mod tests {
   #[test]
   fn test_hash_object_write() {
     let store = MemoryStore::new();
-    let object_manager = ObjectManager::new(&store);
+    let object_manager = ObjectManagerImpl::new(&store);
     let mut provider = TestContentProvider::new();
     provider.set_contents("test".to_string(), "test-body".to_string());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());

@@ -1,7 +1,5 @@
-use log::trace;
-
 use crate::{
-  adapters::{compressor, hasher::Hasher, object_manager::ObjectManagement},
+  adapters::{compressor, hasher::Hasher, object_manager::ObjectManager},
   entities::object::Object,
 };
 
@@ -13,13 +11,13 @@ pub trait ObjectService {
 }
 
 pub struct ObjectServiceImpl<'a> {
-  object_manager: &'a dyn ObjectManagement,
+  object_manager: &'a dyn ObjectManager,
   hasher: &'a dyn Hasher,
 }
 
 impl<'a> ObjectServiceImpl<'a> {
   pub fn new(
-    object_manager: &'a dyn ObjectManagement,
+    object_manager: &'a dyn ObjectManager,
     hasher: &'a dyn Hasher,
   ) -> Self {
     return Self {
@@ -52,13 +50,6 @@ impl<'a> ObjectService for ObjectServiceImpl<'a> {
   fn find(&self, key: &str) -> Result<Object, String> {
     let data = self.object_manager.read(key)?;
     let unzipped = compressor::decompress(&data);
-    for byte in &unzipped {
-      match *byte {
-        0..=31 => trace!("\\x{:02x}", byte),
-        127 => trace!("\\x{:02x}", byte),
-        _ => trace!("{}", *byte as char),
-      }
-    }
     let (content_type, content_length, content) =
       ObjectServiceImpl::parse_object(&unzipped)?;
 
@@ -102,7 +93,7 @@ impl<'a> ObjectServiceImpl<'a> {
 mod tests {
 
   use crate::{
-    adapters::{hasher, object_manager::ObjectManager},
+    adapters::{hasher, object_manager::ObjectManagerImpl},
     infrastructures::memory_store::MemoryStore,
   };
 
@@ -118,7 +109,7 @@ mod tests {
       size: test_data.len(),
     };
     let memory_store = MemoryStore::new();
-    let object_manager = ObjectManager::new(&memory_store);
+    let object_manager = ObjectManagerImpl::new(&memory_store);
 
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
@@ -149,7 +140,7 @@ mod tests {
       size: test_data.len(),
     };
     let memory_store = MemoryStore::new();
-    let object_manager = ObjectManager::new(&memory_store);
+    let object_manager = ObjectManagerImpl::new(&memory_store);
 
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
@@ -172,7 +163,7 @@ mod tests {
       size: test_data.len(),
     };
     let memory_store = MemoryStore::new();
-    let object_manager = ObjectManager::new(&memory_store);
+    let object_manager = ObjectManagerImpl::new(&memory_store);
 
     let formatted_object = [
       format!("{} {}\0", test_object.object_type, test_object.size).as_bytes(),

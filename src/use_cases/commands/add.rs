@@ -1,11 +1,11 @@
 use crate::adapters::{
-  hasher::Hasher, object_manager::ObjectManagement,
+  hasher::Hasher, object_manager::ObjectManager,
   workspace_provider::WorkspaceProvider,
 };
 
 pub struct Add<'a> {
   pub root_path: &'a str,
-  object_manager: &'a dyn ObjectManagement,
+  object_manager: &'a dyn ObjectManager,
   provider: &'a dyn WorkspaceProvider,
   hasher: &'a dyn Hasher,
 }
@@ -15,7 +15,6 @@ mod tests {
   use log::info;
 
   use crate::adapters::workspace_provider::WorkspaceProvider;
-  use crate::infrastructures::memory_store::MemoryStore;
   use crate::infrastructures::test_content_provider::TestContentProvider;
 
   #[test]

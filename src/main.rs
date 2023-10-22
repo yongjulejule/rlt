@@ -13,11 +13,11 @@ mod use_cases;
 
 fn main() -> Result<(), String> {
   env_logger::init();
-  trace!("trace");
-  warn!("warn");
-  info!("info");
-  debug!("debug");
-  error!("error");
+  // trace!("trace");
+  // warn!("warn");
+  // info!("info");
+  // debug!("debug");
+  // error!("error");
 
   let args = Cli::parse();
   trace!("args: {:?}", args);

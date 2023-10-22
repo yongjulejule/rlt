@@ -1,16 +1,16 @@
 use super::data_store::DataStore;
 
-pub trait ObjectManagement {
+pub trait ObjectManager {
   fn write(&self, key: &str, data: &[u8]) -> Result<(), String>;
   fn read(&self, key: &str) -> Result<Vec<u8>, String>;
 }
 
-pub struct ObjectManager<'a> {
+pub struct ObjectManagerImpl<'a> {
   data_store: &'a dyn DataStore,
   object_directory: String,
 }
 
-impl<'a> ObjectManager<'a> {
+impl<'a> ObjectManagerImpl<'a> {
   pub fn new(store: &'a dyn DataStore) -> Self {
     return Self {
       data_store: store,
@@ -19,7 +19,7 @@ impl<'a> ObjectManager<'a> {
   }
 }
 
-impl<'a> ObjectManagement for ObjectManager<'a> {
+impl<'a> ObjectManager for ObjectManagerImpl<'a> {
   fn write(&self, key: &str, data: &[u8]) -> Result<(), String> {
     let path = format!("{}/{}/{}", self.object_directory, &key[..2], &key[2..]);
     self
@@ -46,7 +46,7 @@ mod tests {
   #[test]
   fn test_object_rw() {
     let memory_store = MemoryStore::new();
-    let manager = ObjectManager::new(&memory_store);
+    let manager = ObjectManagerImpl::new(&memory_store);
 
     let object_key = "test";
     let object_content = b"test";

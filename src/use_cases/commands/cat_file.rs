@@ -43,7 +43,7 @@ mod run_tests {
 
   use super::*;
   use crate::{
-    adapters::hasher, adapters::object_manager::ObjectManager,
+    adapters::hasher, adapters::object_manager::ObjectManagerImpl,
     entities::object::Object, infrastructures::memory_store::MemoryStore,
     use_cases::core::object_service::ObjectServiceImpl,
   };
@@ -53,7 +53,7 @@ mod run_tests {
     // setup
     let test_content = "test-content";
     let store = Box::new(MemoryStore::new());
-    let object_manager = ObjectManager::new(store.as_ref());
+    let object_manager = ObjectManagerImpl::new(store.as_ref());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());

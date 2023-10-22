@@ -18,7 +18,7 @@ impl<'a> CheckIgnore<'a> {
     };
   }
 
-  pub fn run(&self) -> Vec<String> {
+  pub fn run(&self) -> Result<Vec<String>, String> {
     trace!("CheckIgnore: {:?}", self.paths);
     let ignored: Vec<String> = self
       .paths
@@ -27,7 +27,10 @@ impl<'a> CheckIgnore<'a> {
       .cloned()
       .collect();
 
-    ignored
+    if ignored.len() == 0 {
+      return Err("Found ignored path".to_string());
+    }
+    Ok(ignored)
   }
 }
 
@@ -43,7 +46,7 @@ mod tests {
       IgnoreServiceImpl::new(vec!["a".to_string()], vec!["a/c".to_string()]);
     let paths = ["a".to_string(), "b".to_string(), "a/c".to_string()].to_vec();
     let check_ignore = CheckIgnore::new(&ignore_service, paths);
-    let result = check_ignore.run();
+    let result = check_ignore.run().unwrap();
 
     assert_eq!(result, ["a".to_string()]);
   }
