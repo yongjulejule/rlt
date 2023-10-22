@@ -6,26 +6,41 @@ Let's implement the git command to learn the internals of git..
 
 - git 은 Plumbing Commands 와 Porcelain Commands 로 나뉜다. (`git help -av | man git`)
 
+### git options
+
+- [x] `-C` 
+- [ ] `--git-dir`
+- [ ] `--work-tree`
+
 ### git Plumbing Commands (Low-level Commands)
 
 - [ ] `git hash-object`
+  - [x] with `-w` option
+  - [x] with `<type> <hash>` argument
 - [ ] `git cat-file`
+  - [x] without options
+- [ ] `git ls-files`
+  - [x] without options
+- [ ] `git check-ignore`
+  - [x] without options
 - [ ] `git update-index`
 - [ ] `git write-tree`
 - [ ] `git read-tree`
-- [ ] `git ls-files`
 
 ...
 
 ### git Porcelain Commands (High-level Commands)
 
+- [ ] `git init`
+  - [x] without options
 - [ ] `git add`
 - [ ] `git commit`
 - [ ] `git status`
 - [ ] `git log`
 - [ ] `git diff`
 - [ ] `git push`
-- [ ] `git init`
+- [ ] `git pull`
+- [ ] `git clone`
 
 ...
 
