@@ -55,6 +55,12 @@ pub enum Commands {
     object: String,
   },
   LsFiles {},
+
+  CheckIgnore {
+    #[arg(value_name = "paths")]
+    paths: Vec<String>,
+  },
+
   /// Clones repos
   #[command(arg_required_else_help = true)]
   Clone {

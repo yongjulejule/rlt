@@ -30,18 +30,24 @@ fn match_recursive(pathspec: &str, path: &str) -> bool {
 }
 
 pub fn is_matched(pathspec: &str, path: &str) -> bool {
-  match pathspec.chars().next() {
+  let (normalized_pathspec, normalized_path) =
+    (normalize_path(pathspec), normalize_path(path));
+  match normalized_pathspec.chars().next() {
     Some(':') => {
       todo!("magic is not implemented yet. I think it never be :)");
     }
-    _ if pathspec.contains("**/") => match_recursive(pathspec, path),
-    _ if pathspec.starts_with("**.") => simple_match(pathspec, path),
-    _ if !pathspec.contains('/')
-      && path.contains(&format!("{}/", pathspec)) =>
+    _ if normalized_pathspec.contains("**/") => {
+      match_recursive(&normalized_pathspec, &normalized_path)
+    }
+    _ if normalized_pathspec.starts_with("**.") => {
+      simple_match(&normalized_pathspec, &normalized_path)
+    }
+    _ if !normalized_pathspec.contains('/')
+      && normalized_path.contains(&format!("{}/", normalized_pathspec)) =>
     {
       true
     }
-    _ => simple_match(pathspec, path),
+    _ => simple_match(&normalized_pathspec, &normalized_path),
   }
 }
 

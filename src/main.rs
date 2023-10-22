@@ -6,11 +6,11 @@ use crate::{
 };
 mod adapters;
 mod cli;
+mod entities;
 mod infrastructures;
 mod use_cases;
-mod entities;
 
-fn main() {
+fn main() -> Result<(), String> {
   let args = Cli::parse();
   println!("args: {:?}\n", args);
 
@@ -19,5 +19,5 @@ fn main() {
     &args.work_tree,
     &args.git_dir,
   );
-  CommandExecutor::new(ctx).execute(args.command);
+  CommandExecutor::new(ctx).execute(args.command)
 }
