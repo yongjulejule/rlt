@@ -61,6 +61,7 @@ pub enum Commands {
     paths: Vec<String>,
   },
 
+  Log {},
   /// Clones repos
   #[command(arg_required_else_help = true)]
   Clone {

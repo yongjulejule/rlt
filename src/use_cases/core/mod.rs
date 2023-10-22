@@ -1,3 +1,4 @@
+pub mod commit_helper;
 pub mod ignore_service;
 pub mod index_service;
 pub mod object_service;

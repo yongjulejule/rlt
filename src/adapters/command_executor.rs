@@ -3,7 +3,6 @@ use std::ffi::OsStr;
 use log::trace;
 
 use crate::{
-  adapters::object_manager,
   cli::parser::Commands,
   infrastructures::{
     file_store::FileStore, local_filesystem_provider::LocalFilesystemProvider,
@@ -14,13 +13,17 @@ use crate::{
       init, ls_files::LsFiles,
     },
     core::{
-      ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
+      commit_helper::{traverse_commits, PrintMessageVisitor},
+      ignore_service::IgnoreServiceImpl,
+      object_service::ObjectService,
+      object_service::ObjectServiceImpl,
     },
   },
 };
 
 use super::{
-  data_store::DataStore, hasher, workspace_provider::WorkspaceProvider,
+  data_store::DataStore, hasher, object_manager::ObjectManagerImpl,
+  workspace_provider::WorkspaceProvider,
 };
 
 pub struct CommandExecutionContext {
@@ -73,11 +76,13 @@ impl CommandExecutor {
     let store = self.ctx.store;
     let provider = self.ctx.provider;
     let hasher = self.ctx.hasher;
-    let object_manager = object_manager::ObjectManager::new(store.as_ref());
+    let object_manager = ObjectManagerImpl::new(store.as_ref());
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());
     let ignore_raw = provider.get_contents(".gitignore".to_string());
     let ignore_service = IgnoreServiceImpl::from_raw(&ignore_raw.as_bytes())?;
+
+    trace!("command: {:?}", command);
 
     match command {
       Commands::Init(init) => {
@@ -103,8 +108,9 @@ impl CommandExecutor {
         object,
         object_type,
       } => {
-        let result = CatFile::new(&object_service, object_type, object).run();
-        trace!("{}", result.ok().unwrap());
+        let result =
+          CatFile::new(&object_service, object_type, object).run()?;
+        println!("{}", result);
         Ok(())
       }
 
@@ -117,11 +123,36 @@ impl CommandExecutor {
       Commands::CheckIgnore { paths } => {
         trace!("Checking ignore for {:?}", paths);
 
-        let result = CheckIgnore::new(&ignore_service, paths).run();
-        if !result.len() == 0 {
-          return Err("Found ignored path".to_string());
-        }
-        trace!("ignored : {:?}", result);
+        let result = CheckIgnore::new(&ignore_service, paths).run()?;
+        println!("{}", result.join("\n"));
+        Ok(())
+      }
+      Commands::Log {} => {
+        trace!("Log");
+        // TODO: Following two lies are related to rev-parse. Move after implementing rev-parse
+        let head = store.read("HEAD").map_err(|e| e.to_string())?;
+        let ref_name = String::from_utf8_lossy(&head)
+          .trim_start_matches("ref: ")
+          .trim_end()
+          .to_string();
+        trace!("ref_name: {:?}", ref_name);
+
+        let current_object_hash_raw =
+          store.read(&ref_name).map_err(|e| e.to_string())?;
+        let current_object_hash =
+          String::from_utf8_lossy(&current_object_hash_raw)
+            .trim_end()
+            .to_string();
+        trace!("current_object_hash: {:?}", current_object_hash);
+        let head_object_raw = object_service
+          .find(&current_object_hash)
+          .map_err(|e| e.to_string())?;
+        let head_object = String::from_utf8_lossy(&head_object_raw.data);
+        trace!("head_object: {:?}", head_object);
+
+        let visitor = PrintMessageVisitor;
+        traverse_commits(&object_service, &current_object_hash, &visitor)?;
+
         Ok(())
       }
 
