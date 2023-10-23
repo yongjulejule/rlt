@@ -18,6 +18,8 @@ fn main() -> Result<(), String> {
   // info!("info");
   // debug!("debug");
   // error!("error");
+    //
+  println!("Hello, world!");
 
   let args = Cli::parse();
   trace!("args: {:?}", args);
