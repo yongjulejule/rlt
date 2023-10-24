@@ -5,11 +5,23 @@ use super::object_service::ObjectService;
 pub trait CommitVisitor {
   fn visit_commit(&self, commit: &CommitObject);
 }
-pub struct PrintMessageVisitor;
+pub struct PrintOneLineMessageVisitor;
 
-impl CommitVisitor for PrintMessageVisitor {
+impl CommitVisitor for PrintOneLineMessageVisitor {
   fn visit_commit(&self, commit: &CommitObject) {
     println!("{} {}", &commit.hash[..7], commit.message);
+  }
+}
+
+pub struct PrintCommitVisitor;
+
+impl CommitVisitor for PrintCommitVisitor {
+  fn visit_commit(&self, commit: &CommitObject) {
+    println!("commit {}", &commit.hash);
+    println!("Author: {}", commit.author);
+    println!();
+    println!("    {}", commit.message);
+    println!();
   }
 }
 
