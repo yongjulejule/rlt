@@ -13,7 +13,9 @@ use crate::{
       init, ls_files::LsFiles,
     },
     core::{
-      commit_helper::{traverse_commits, PrintMessageVisitor},
+      commit_helper::{
+        traverse_commits, PrintCommitVisitor, PrintOneLineMessageVisitor,
+      },
       ignore_service::IgnoreServiceImpl,
       object_service::ObjectService,
       object_service::ObjectServiceImpl,
@@ -150,8 +152,14 @@ impl CommandExecutor {
         let head_object = String::from_utf8_lossy(&head_object_raw.data);
         trace!("head_object: {:?}", head_object);
 
-        let visitor = PrintMessageVisitor;
+        let visitor = PrintOneLineMessageVisitor;
         traverse_commits(&object_service, &current_object_hash, &visitor)?;
+        let another_visitor = PrintCommitVisitor;
+        traverse_commits(
+          &object_service,
+          &current_object_hash,
+          &another_visitor,
+        )?;
 
         Ok(())
       }
