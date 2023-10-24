@@ -11,6 +11,12 @@ mod entities;
 mod infrastructures;
 mod use_cases;
 
+fn add(a: i32, b: u32) -> i32 {
+    let c = a;
+    let d = b as i32;
+    c + d
+}
+
 fn main() -> Result<(), String> {
   env_logger::init();
   // trace!("trace");
@@ -18,6 +24,8 @@ fn main() -> Result<(), String> {
   // info!("info");
   // debug!("debug");
   // error!("error");
+    //
+println!("result: {}", add(42, 64));
 
   let args = Cli::parse();
   trace!("args: {:?}", args);
