@@ -3,34 +3,44 @@ use crate::entities::object::CommitObject;
 use super::object_service::ObjectService;
 
 pub trait CommitVisitor {
-  fn visit_commit(&self, commit: &CommitObject);
+  fn visit_commit(&self, commit: &CommitObject) -> String;
 }
-pub struct PrintOneLineMessageVisitor;
 
-impl CommitVisitor for PrintOneLineMessageVisitor {
-  fn visit_commit(&self, commit: &CommitObject) {
-    println!("{} {}", &commit.hash[..7], commit.message);
+pub struct FormatCommitVisitor;
+
+impl CommitVisitor for FormatCommitVisitor {
+  fn visit_commit(&self, commit: &CommitObject) -> String {
+    // extract timestamp from commit.author and format it
+    let author_field = commit.author.split(" ").collect::<Vec<&str>>();
+    let author = author_field[0..author_field.len() - 2].join(" ");
+    let timestamp_str = author_field[author_field.len() - 2];
+    let timezone = author_field[author_field.len() - 1];
+
+    let timestamp = match i64::from_str_radix(timestamp_str, 10) {
+      Ok(timestamp) => timestamp,
+      Err(_) => 0,
+    };
+
+    let naive_datetime =
+      chrono::NaiveDateTime::from_timestamp_millis(timestamp * 1000).unwrap();
+    let datetime: chrono::DateTime<chrono::Utc> =
+      chrono::DateTime::from_naive_utc_and_offset(naive_datetime, chrono::Utc);
+    let formatted_timestamp = datetime.format("%a %b %e %T %Y").to_string();
+
+    format!(
+      "commit {}\nAuthor: {}\nDate: {} {}\n{}\n",
+      &commit.hash, author, formatted_timestamp, timezone, &commit.message
+    )
   }
 }
 
-pub struct PrintCommitVisitor;
-
-impl CommitVisitor for PrintCommitVisitor {
-  fn visit_commit(&self, commit: &CommitObject) {
-    println!("commit {}", &commit.hash);
-    println!("Author: {}", commit.author);
-    println!();
-    println!("    {}", commit.message);
-    println!();
-  }
-}
-
-pub fn traverse_commits<S: ObjectService>(
-  service: &S,
+pub fn traverse_commits<'a>(
+  service: &(dyn ObjectService + 'a),
   start_hash: &str,
   visitor: &dyn CommitVisitor,
-) -> Result<(), String> {
+) -> Result<Vec<String>, String> {
   let mut stack: Vec<String> = Vec::new();
+  let mut result: Vec<String> = Vec::new();
   stack.push(start_hash.to_string());
 
   while let Some(current_hash) = stack.pop() {
@@ -40,7 +50,7 @@ pub fn traverse_commits<S: ObjectService>(
           &current_hash,
           &String::from_utf8_lossy(&raw_object.data),
         )?;
-        visitor.visit_commit(&commit);
+        result.push(visitor.visit_commit(&commit));
 
         for parent_hash in commit.parents.iter() {
           stack.push(parent_hash.clone());
@@ -49,6 +59,5 @@ pub fn traverse_commits<S: ObjectService>(
       Err(err) => return Err(err),
     }
   }
-
-  Ok(())
+  Ok(result)
 }

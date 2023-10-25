@@ -41,7 +41,7 @@ impl IndexServiceImpl {
     let entries_count = u32::from_be_bytes(data[8..12].try_into().unwrap());
     trace!("entries_count: {}", entries_count);
 
-    let mut start = 12;
+    let mut start = ENTRY_START_OFFSET;
     for _i in 0..entries_count {
       let ctime = parse_i32(&data, start, CTIME_OFFSET)?;
       let ctime_nsec = parse_i32(&data, start, CTIME_NSEC_OFFSET)?;
