@@ -9,15 +9,15 @@ use crate::{
   },
   use_cases::{
     commands::{
-      cat_file::CatFile, check_ignore::CheckIgnore, hash_object::HashObject,
-      init, ls_files::LsFiles,
+      cat_file::CatFile,
+      check_ignore::CheckIgnore,
+      hash_object::HashObject,
+      init,
+      log::{Log, LogOptions},
+      ls_files::LsFiles,
     },
     core::{
-      commit_helper::{
-        traverse_commits, PrintCommitVisitor, PrintOneLineMessageVisitor,
-      },
-      ignore_service::IgnoreServiceImpl,
-      object_service::ObjectService,
+      ignore_service::IgnoreServiceImpl, object_service::ObjectService,
       object_service::ObjectServiceImpl,
     },
   },
@@ -129,38 +129,20 @@ impl CommandExecutor {
         println!("{}", result.join("\n"));
         Ok(())
       }
-      Commands::Log {} => {
+      Commands::Log(log_args) => {
         trace!("Log");
-        // TODO: Following two lies are related to rev-parse. Move after implementing rev-parse
-        let head = store.read("HEAD").map_err(|e| e.to_string())?;
-        let ref_name = String::from_utf8_lossy(&head)
-          .trim_start_matches("ref: ")
-          .trim_end()
-          .to_string();
-        trace!("ref_name: {:?}", ref_name);
 
-        let current_object_hash_raw =
-          store.read(&ref_name).map_err(|e| e.to_string())?;
-        let current_object_hash =
-          String::from_utf8_lossy(&current_object_hash_raw)
-            .trim_end()
-            .to_string();
-        trace!("current_object_hash: {:?}", current_object_hash);
-        let head_object_raw = object_service
-          .find(&current_object_hash)
-          .map_err(|e| e.to_string())?;
-        let head_object = String::from_utf8_lossy(&head_object_raw.data);
-        trace!("head_object: {:?}", head_object);
+        let options = LogOptions::new(
+          log_args.is_oneline,
+          log_args.abbrev_commit,
+          log_args.no_abbrev_commit,
+          log_args.stat,
+        );
 
-        let visitor = PrintOneLineMessageVisitor;
-        traverse_commits(&object_service, &current_object_hash, &visitor)?;
-        let another_visitor = PrintCommitVisitor;
-        traverse_commits(
-          &object_service,
-          &current_object_hash,
-          &another_visitor,
-        )?;
+        let result =
+          Log::new(store.as_ref(), &object_service, options).run()?;
 
+        println!("{}", result);
         Ok(())
       }
 

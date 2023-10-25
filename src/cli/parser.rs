@@ -61,7 +61,7 @@ pub enum Commands {
     paths: Vec<String>,
   },
 
-  Log {},
+  Log(LogArgs),
   /// Clones repos
   #[command(arg_required_else_help = true)]
   Clone {
@@ -100,19 +100,6 @@ pub enum Commands {
   #[command(external_subcommand)]
   External(Vec<OsString>),
 }
-
-/*
-* synopsis:
-
-git cat-file <type> <object>
-git cat-file (-e | -p) <object>
-git cat-file (-t | -s) [--allow-unknown-type] <object>
-git cat-file (--batch | --batch-check | --batch-command) [--batch-all-objects]
-    [--buffer] [--follow-symlinks] [--unordered]
-    [--textconv | --filters] [-Z]
-git cat-file (--textconv | --filters)
-    [<rev>:<path|tree-ish> | --path=<path|tree-ish> <rev>]
-*/
 
 #[derive(Debug, Args, PartialEq, Eq)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -154,6 +141,22 @@ pub struct HashObjectArgs {
 
   #[arg(value_name = "path", required = true)]
   pub path: Vec<String>,
+}
+
+#[derive(Debug, Args, PartialEq, Eq)]
+#[command(args_conflicts_with_subcommands = true)]
+pub struct LogArgs {
+  #[arg(long = "oneline", default_value = "false")]
+  pub is_oneline: bool,
+
+  #[arg(long = "abbrev-commit", default_value = "7")]
+  pub abbrev_commit: u8,
+
+  #[arg(long = "no-abbrev-commit", default_value = "false")]
+  pub no_abbrev_commit: bool,
+
+  #[arg(long = "stat", default_value = "false")]
+  pub stat: bool,
 }
 
 #[derive(Debug, Args, PartialEq, Eq)]
