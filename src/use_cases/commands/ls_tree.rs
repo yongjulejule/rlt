@@ -1,7 +1,8 @@
 use log::trace;
 
 use crate::{
-  entities::object::TreeObject, use_cases::core::object_service::ObjectService,
+  entities::object::{TreeElement, TreeObject},
+  use_cases::core::object_service::ObjectService,
 };
 
 #[derive(Debug)]
@@ -33,17 +34,21 @@ impl<'a> LsTree<'a> {
     let raw_object = self.object_service.find(&self.options.tree_ish)?;
     let tree = TreeObject::parse(&self.options.tree_ish, &raw_object.data)?;
     trace!("tree: {:?}", tree);
-    let result = tree
-      .entries
-      .iter()
-      .map(|entry| match entry.mode.as_str() {
+
+    let formatter = |entry: &TreeElement| -> String {
+      match entry.mode.as_str() {
         "40000" => {
           format!("{} {} {}\t{}\n", "040000", "tree", entry.hash, entry.name)
         }
         _ => {
           format!("{} {} {}\t{}\n", entry.mode, "blob", entry.hash, entry.name)
         }
-      })
+      }
+    };
+    let result = tree
+      .entries
+      .iter()
+      .map(formatter)
       .collect::<Vec<String>>()
       .join("");
 
