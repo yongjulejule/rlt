@@ -149,8 +149,8 @@ pub struct LogArgs {
   #[arg(long = "oneline", default_value = "false")]
   pub is_oneline: bool,
 
-  #[arg(long = "abbrev-commit", default_value = "7")]
-  pub abbrev_commit: u8,
+  #[arg(long = "abbrev-commit")]
+  pub abbrev_commit: Option<u8>,
 
   #[arg(long = "no-abbrev-commit", default_value = "false")]
   pub no_abbrev_commit: bool,
