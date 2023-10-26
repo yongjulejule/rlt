@@ -1,5 +1,5 @@
 use clap::Parser;
-use log::{debug, error, info, trace, warn};
+use log::{error, trace};
 
 use crate::{
   adapters::command_executor::{CommandExecutionContext, CommandExecutor},
@@ -13,11 +13,6 @@ mod use_cases;
 
 fn main() -> Result<(), String> {
   env_logger::init();
-  // trace!("trace");
-  // warn!("warn");
-  // info!("info");
-  // debug!("debug");
-  // error!("error");
 
   let args = Cli::parse();
   trace!("args: {:?}", args);

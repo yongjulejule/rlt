@@ -4,7 +4,7 @@ Let's implement the git command to learn the internals of git..
 
 ## TODO 
 
-- git 은 Plumbing Commands 와 Porcelain Commands 로 나뉜다. (`git help -av | man git`)
+> git 은 Plumbing Commands 와 Porcelain Commands 로 나뉜다. (`git help -av` or `man git` 참고)
 
 ### git options
 
@@ -23,6 +23,8 @@ Let's implement the git command to learn the internals of git..
   - [x] without options
 - [ ] `git check-ignore`
   - [x] without options
+- [ ] `git ls-tree`
+  - [ ] without options
 - [ ] `git update-index`
 - [ ] `git write-tree`
 - [ ] `git read-tree`
