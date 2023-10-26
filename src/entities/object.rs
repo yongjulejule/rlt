@@ -24,6 +24,7 @@ pub struct BlobObject {
   pub size: usize,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TreeObject {
   pub object_type: String,
   pub hash: String,
@@ -31,10 +32,73 @@ pub struct TreeObject {
   pub size: usize,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TreeElement {
   pub mode: String,
   pub name: String,
   pub hash: String,
+}
+
+impl TreeObject {
+  pub fn parse(hash: &str, content: &[u8]) -> Result<TreeObject, String> {
+    let mut entries = Vec::new();
+    let mut i = 0;
+    let content_len = content.len();
+
+    while i < content_len {
+      let mode_end = content[i..]
+        .iter()
+        .position(|&b| b == b' ')
+        .ok_or("Failed to find space after mode")?
+        + i;
+      let mode = std::str::from_utf8(&content[i..mode_end]).map_err(|_| {
+        format!("Failed to parse mode as UTF-8: {:?}", &content[i..mode_end])
+      })?;
+
+      let name_end = content[mode_end + 1..]
+        .iter()
+        .position(|&b| b == b'\0')
+        .ok_or("Failed to find null terminator after name")?
+        + mode_end
+        + 1;
+
+      let name = std::str::from_utf8(&content[mode_end + 1..name_end])
+        .map_err(|_| {
+          format!(
+            "Failed to parse name as UTF-8: {:?}",
+            &content[mode_end + 1..name_end]
+          )
+        })?;
+
+      let hash_start = name_end + 1;
+      let hash_end = hash_start + 20; // SHA-1 hash size is 20 bytes
+      if hash_end > content_len {
+        return Err("Incomplete hash".into());
+      }
+      let hash =
+        std::str::from_utf8(&content[hash_start..hash_end]).map_err(|_| {
+          format!(
+            "Failed to parse hash as UTF-8: {:?}",
+            &content[hash_start..hash_end]
+          )
+        })?;
+
+      entries.push(TreeElement {
+        mode: mode.to_string(),
+        name: name.to_string(),
+        hash: hash.to_string(),
+      });
+
+      i = hash_end;
+    }
+
+    Ok(TreeObject {
+      object_type: "tree".to_string(),
+      hash: hash.to_string(),
+      entries,
+      size: content.len(),
+    })
+  }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -121,6 +185,8 @@ impl CommitObject {
 mod tests {
   use crate::entities::object::CommitObject;
 
+  use super::{TreeElement, TreeObject};
+
   #[test]
   fn parse_commit() {
     let hash = "test-hash";
@@ -139,6 +205,34 @@ mod tests {
     };
 
     let result = CommitObject::parse(hash, &content).unwrap();
+
+    assert_eq!(result, expected);
+  }
+
+  #[test]
+  fn parse_tree() {
+    let hash = "test-hash";
+    let content = b"100644 test-name\0test-hash###########40000 test-dir\0test-hash2##########";
+
+    let expected = TreeObject {
+      hash: hash.to_string(),
+      object_type: "tree".to_string(),
+      entries: vec![
+        TreeElement {
+          mode: "100644".to_string(),
+          name: "test-name".to_string(),
+          hash: "test-hash###########".to_string(),
+        },
+        TreeElement {
+          mode: "40000".to_string(),
+          name: "test-dir".to_string(),
+          hash: "test-hash2##########".to_string(),
+        },
+      ],
+      size: content.len(),
+    };
+
+    let result = TreeObject::parse(hash, content).unwrap();
 
     assert_eq!(result, expected);
   }

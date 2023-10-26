@@ -17,8 +17,7 @@ use crate::{
       ls_files::LsFiles,
     },
     core::{
-      ignore_service::IgnoreServiceImpl, object_service::ObjectService,
-      object_service::ObjectServiceImpl,
+      ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
     },
   },
 };
