@@ -55,13 +55,12 @@ pub enum Commands {
     object: String,
   },
   LsFiles {},
-
   CheckIgnore {
     #[arg(value_name = "paths")]
     paths: Vec<String>,
   },
-
   Log(LogArgs),
+  LsTree(LsTreeArgs),
   /// Clones repos
   #[command(arg_required_else_help = true)]
   Clone {
@@ -157,6 +156,19 @@ pub struct LogArgs {
 
   #[arg(long = "stat", default_value = "false")]
   pub stat: bool,
+}
+
+#[derive(Debug, Args, PartialEq, Eq)]
+#[command(args_conflicts_with_subcommands = true)]
+pub struct LsTreeArgs {
+  #[arg(short = 'r')]
+  pub recurse: bool,
+
+  #[arg(value_name = "tree-ish", required = true)]
+  pub tree_ish: String,
+
+  #[arg(value_name = "path")]
+  pub path: Vec<String>,
 }
 
 #[derive(Debug, Args, PartialEq, Eq)]
