@@ -6,11 +6,24 @@ pub trait CommitVisitor {
   fn visit_commit(&self, commit: &CommitObject) -> String;
 }
 
-pub struct FormatCommitVisitor;
+pub struct FormatCommitVisitor {
+  is_oneline: bool,
+  abbrev_commit: u8,
+  stat: bool,
+}
+
+impl FormatCommitVisitor {
+  pub fn new(is_oneline: bool, abbrev_commit: u8, stat: bool) -> Self {
+    return Self {
+      is_oneline,
+      abbrev_commit,
+      stat,
+    };
+  }
+}
 
 impl CommitVisitor for FormatCommitVisitor {
   fn visit_commit(&self, commit: &CommitObject) -> String {
-    // extract timestamp from commit.author and format it
     let author_field = commit.author.split(" ").collect::<Vec<&str>>();
     let author = author_field[0..author_field.len() - 2].join(" ");
     let timestamp_str = author_field[author_field.len() - 2];
@@ -27,10 +40,33 @@ impl CommitVisitor for FormatCommitVisitor {
       chrono::DateTime::from_naive_utc_and_offset(naive_datetime, chrono::Utc);
     let formatted_timestamp = datetime.format("%a %b %e %T %Y").to_string();
 
-    format!(
-      "commit {}\nAuthor: {}\nDate: {} {}\n{}\n",
-      &commit.hash, author, formatted_timestamp, timezone, &commit.message
-    )
+    let abbreviated_commit = commit
+      .hash
+      .chars()
+      .take(self.abbrev_commit as usize)
+      .collect::<String>();
+    let stat = if self.stat {
+      format!("\nStat not implemented yet")
+    } else {
+      "".to_string()
+    };
+
+    if self.is_oneline {
+      format!(
+        "{} {}",
+        abbreviated_commit,
+        &commit.message.lines().next().unwrap_or("")
+      ) + &stat
+    } else {
+      format!(
+        "commit {}\nAuthor: {}\nDate: {} {}\n{}\n",
+        abbreviated_commit,
+        author,
+        formatted_timestamp,
+        timezone,
+        &commit.message
+      ) + &stat
+    }
   }
 }
 

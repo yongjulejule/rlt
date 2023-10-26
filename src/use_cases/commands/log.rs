@@ -11,7 +11,7 @@ use crate::{
 #[derive(Debug)]
 pub struct LogOptions {
   is_oneline: bool,
-  abbrev_commit: u8,
+  abbrev_commit: Option<u8>,
   no_abbrev_commit: bool,
   stat: bool,
 }
@@ -19,7 +19,7 @@ pub struct LogOptions {
 impl LogOptions {
   pub fn new(
     is_oneline: bool,
-    abbrev_commit: u8,
+    abbrev_commit: Option<u8>,
     no_abbrev_commit: bool,
     stat: bool,
   ) -> Self {
@@ -73,12 +73,23 @@ impl<'a> Log<'a> {
     let head_object = String::from_utf8_lossy(&head_object_raw.data);
     trace!("head_object: {:?}", head_object);
 
-    let another_visitor = FormatCommitVisitor;
-    let result = traverse_commits(
-      self.object_service,
-      &current_object_hash,
-      &another_visitor,
-    )?;
+    let abbrev_count = match (
+      self.options.abbrev_commit,
+      self.options.no_abbrev_commit,
+      self.options.is_oneline,
+    ) {
+      (Some(count), _, _) => count,
+      (_, false, true) => 7,
+      (_, _, _) => 40,
+    };
+
+    let visitor = FormatCommitVisitor::new(
+      self.options.is_oneline,
+      abbrev_count,
+      self.options.stat,
+    );
+    let result =
+      traverse_commits(self.object_service, &current_object_hash, &visitor)?;
 
     Ok(result.join("\n"))
   }
