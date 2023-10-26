@@ -15,6 +15,7 @@ use crate::{
       init,
       log::{Log, LogOptions},
       ls_files::LsFiles,
+      ls_tree::{LsTree, LsTreeOptions},
     },
     core::{
       ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
@@ -140,6 +141,22 @@ impl CommandExecutor {
 
         let result =
           Log::new(store.as_ref(), &object_service, options).run()?;
+
+        println!("{}", result);
+        Ok(())
+      }
+      Commands::LsTree(ls_tree_args) => {
+        trace!("LsTree");
+
+        let result = LsTree::new(
+          &object_service,
+          LsTreeOptions {
+            recurse: ls_tree_args.recurse,
+            tree_ish: ls_tree_args.tree_ish,
+            path: ls_tree_args.path,
+          },
+        )
+        .run()?;
 
         println!("{}", result);
         Ok(())

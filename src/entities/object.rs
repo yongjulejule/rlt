@@ -17,12 +17,12 @@ impl Object {
   }
 }
 
-pub struct BlobObject {
-  pub object_type: String,
-  pub data: Vec<u8>,
-  pub hash: String,
-  pub size: usize,
-}
+// pub struct BlobObject {
+//   pub object_type: String,
+//   pub data: Vec<u8>,
+//   pub hash: String,
+//   pub size: usize,
+// }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TreeObject {
@@ -75,13 +75,10 @@ impl TreeObject {
       if hash_end > content_len {
         return Err("Incomplete hash".into());
       }
-      let hash =
-        std::str::from_utf8(&content[hash_start..hash_end]).map_err(|_| {
-          format!(
-            "Failed to parse hash as UTF-8: {:?}",
-            &content[hash_start..hash_end]
-          )
-        })?;
+      let hash = &content[hash_start..hash_end]
+        .iter()
+        .map(|b| format!("{:02x}", b))
+        .collect::<String>();
 
       entries.push(TreeElement {
         mode: mode.to_string(),
