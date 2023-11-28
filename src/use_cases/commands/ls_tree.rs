@@ -34,29 +34,38 @@ impl<'a> LsTree<'a> {
     let raw_object = self.object_service.find(&self.options.tree_ish)?;
     let tree = TreeObject::parse(&self.options.tree_ish, &raw_object.data)?;
     trace!("tree: {:?}", tree);
+    let mut result = String::new();
+    self.list_tree(&tree, &mut result, &self.options.recurse)?;
+    Ok(result)
+  }
 
-    let formatter = |entry: &TreeElement| -> String {
+  fn list_tree(
+    &self,
+    tree: &TreeObject,
+    result: &mut String,
+    recurse: &bool,
+  ) -> Result<(), String> {
+    for entry in &tree.entries {
       match entry.mode.as_str() {
         "40000" => {
-          format!("{} {} {}\t{}\n", "040000", "tree", entry.hash, entry.name)
+          result.push_str(&format!(
+            "{} {} {}\t{}\n",
+            "040000", "tree", entry.hash, entry.name
+          ));
+          if *recurse {
+            let raw_object = self.object_service.find(&entry.hash)?;
+            let subtree = TreeObject::parse(&entry.hash, &raw_object.data)?;
+            self.list_tree(&subtree, result, recurse)?;
+          }
         }
         _ => {
-          format!("{} {} {}\t{}\n", entry.mode, "blob", entry.hash, entry.name)
+          result.push_str(&format!(
+            "{} {} {}\t{}\n",
+            entry.mode, "blob", entry.hash, entry.name
+          ));
         }
       }
-    };
-    let result = tree
-      .entries
-      .iter()
-      .map(formatter)
-      .collect::<Vec<String>>()
-      .join("");
-
-    // let mut result = String::new();
-    // for (name, hash) in tree.entries.iter() {
-    //   let object = self.object_service.find(hash)?;
-    //   result.push_str(&format!("{}\t{}\t{}\n", object.object_type, hash, name));
-    // }
-    Ok(result)
+    }
+    Ok(())
   }
 }
