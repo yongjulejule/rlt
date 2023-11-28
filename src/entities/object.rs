@@ -26,10 +26,16 @@ impl Object {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TreeObject {
+  // only supports version 2
   pub object_type: String,
   pub hash: String,
   pub entries: Vec<TreeElement>,
   pub size: usize,
+}
+
+pub struct TreeExtension {
+  pub signature: String,
+  pub data: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -209,7 +215,8 @@ mod tests {
   #[test]
   fn parse_tree() {
     let hash = "test-hash";
-    let content = b"100644 test-name\0test-hash###########40000 test-dir\0test-hash2##########";
+    let content =
+      b"100644 test-name\0ffffffffffffffffffff40000 test-dir\0ffffffffffffffffffff";
 
     let expected = TreeObject {
       hash: hash.to_string(),
@@ -218,12 +225,12 @@ mod tests {
         TreeElement {
           mode: "100644".to_string(),
           name: "test-name".to_string(),
-          hash: "test-hash###########".to_string(),
+          hash: "6666666666666666666666666666666666666666".to_string(),
         },
         TreeElement {
           mode: "40000".to_string(),
           name: "test-dir".to_string(),
-          hash: "test-hash2##########".to_string(),
+          hash: "6666666666666666666666666666666666666666".to_string(),
         },
       ],
       size: content.len(),
