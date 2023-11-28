@@ -55,7 +55,8 @@ impl<'a> LsTree<'a> {
           format!("{}/{}", parent_directory, entry.name)
         };
 
-        match (is_tree(entry.mode.as_str()), recurse) {
+        let is_entry_tree = is_tree(entry.mode.as_str());
+        match (is_entry_tree, recurse) {
           (true, true) => {
             let raw_object = self.object_service.find(&entry.hash)?;
             let subtree = TreeObject::parse(&entry.hash, &raw_object.data)?;
