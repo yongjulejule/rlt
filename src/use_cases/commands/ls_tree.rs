@@ -39,6 +39,7 @@ impl<'a> LsTree<'a> {
     Ok(result)
   }
 
+  // FIXME: 개비효율적임 나중에 수정하기~
   fn list_tree(
     &self,
     parent_directory: &str,
