@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use log::trace;
 
 use crate::{
@@ -17,6 +19,11 @@ pub struct LsTree<'a> {
   options: LsTreeOptions,
 }
 
+const MAX_DEPTH: usize = 42;
+const MODE_TREE: &str = "040000";
+const ITEM_TYPE_TREE: &str = "tree";
+const ITEM_TYPE_BLOB: &str = "blob";
+
 impl<'a> LsTree<'a> {
   pub fn new(
     object_service: &'a dyn ObjectService,
@@ -35,48 +42,61 @@ impl<'a> LsTree<'a> {
     let tree = TreeObject::parse(&self.options.tree_ish, &raw_object.data)?;
     trace!("tree: {:?}", tree);
 
-    let result = self.list_tree("", &tree, self.options.recurse)?.concat();
+    let paths = BTreeSet::from_iter(self.options.path.clone());
+
+    let result = self
+      .list_tree(None, &tree.entries, &paths, self.options.recurse, 0)?
+      .concat();
+    trace!("result: {:?}", result);
     Ok(result)
   }
 
-  // FIXME: 개비효율적임 나중에 수정하기~
   fn list_tree(
     &self,
-    parent_directory: &str,
-    tree: &TreeObject,
+    parent_directory: Option<&str>,
+    entries: &[TreeElement],
+    paths: &BTreeSet<String>,
     recurse: bool,
+    depth: usize,
   ) -> Result<Vec<String>, String> {
-    tree
-      .entries
+    if depth > MAX_DEPTH {
+      return Err(format!("Max depth exceeded in tree: {}", MAX_DEPTH));
+    }
+    entries
       .iter()
+      .filter(|entry| {
+        // NOTE: path arguments not supported in recursive mode
+        paths.is_empty() || paths.contains(&entry.name) || recurse
+      })
       .map(|entry| {
-        let full_name = if parent_directory.is_empty() {
-          entry.name.clone()
-        } else {
-          format!("{}/{}", parent_directory, entry.name)
-        };
-
+        let full_name = parent_directory
+          .map(|dir| format!("{}/{}", dir, entry.name))
+          .unwrap_or_else(|| entry.name.clone());
         let is_entry_tree = is_tree(entry.mode.as_str());
+
         match (is_entry_tree, recurse) {
           (true, true) => {
             let raw_object = self.object_service.find(&entry.hash)?;
             let subtree = TreeObject::parse(&entry.hash, &raw_object.data)?;
-            self.list_tree(&full_name, &subtree, recurse)
+            self.list_tree(
+              Some(&full_name),
+              &subtree.entries,
+              paths,
+              recurse,
+              depth + 1,
+            )
           }
-          _ => {
-            let line = if is_tree(entry.mode.as_str()) {
-              format!("{} {} {}\t{}\n", "040000", "tree", entry.hash, full_name)
-            } else {
-              format!(
-                "{} {} {}\t{}\n",
-                entry.mode, "blob", entry.hash, full_name
-              )
-            };
-            Ok(vec![line])
-          }
+          (true, false) => Ok(vec![format!(
+            "{} {} {}\t{}\n",
+            MODE_TREE, ITEM_TYPE_TREE, entry.hash, full_name
+          )]),
+          (false, _) => Ok(vec![format!(
+            "{} {} {}\t{}\n",
+            entry.mode, ITEM_TYPE_BLOB, entry.hash, full_name
+          )]),
         }
       })
-      .collect::<Result<Vec<_>, String>>()
+      .collect::<Result<Vec<_>, _>>()
       .map(|lines| lines.concat())
   }
 }
