@@ -24,7 +24,8 @@ Let's implement the git command to learn the internals of git..
 - [ ] `git check-ignore`
   - [x] without options
 - [ ] `git ls-tree`
-  - [ ] without options
+  - [x] with `recursive` option
+  - [x] with path argument, without recursive option
 - [ ] `git update-index`
 - [ ] `git write-tree`
 - [ ] `git read-tree`
@@ -39,6 +40,7 @@ Let's implement the git command to learn the internals of git..
 - [ ] `git commit`
 - [ ] `git status`
 - [ ] `git log`
+  - [x] without support for packed-refs
 - [ ] `git diff`
 - [ ] `git push`
 - [ ] `git pull`
