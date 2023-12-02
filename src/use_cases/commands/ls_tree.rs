@@ -73,7 +73,7 @@ impl<'a> LsTree<'a> {
         let full_name = parent_directory
           .map(|dir| format!("{}/{}", dir, entry.name))
           .unwrap_or_else(|| entry.name.clone());
-        let (object_type, object_mode) = determine_type(entry.mode.as_str());
+        let (object_type, object_mode) = determine_type(entry.mode.as_str())?;
 
         match (object_type, recurse) {
           (ITEM_TYPE_TREE, true) => {
@@ -98,11 +98,11 @@ impl<'a> LsTree<'a> {
   }
 }
 
-fn determine_type(mode: &str) -> (&str, &str) {
+fn determine_type(mode: &str) -> Result<(&str, &str), String> {
   match mode {
-    "40000" => (ITEM_TYPE_TREE, "040000"),
-    "100644" | "100755" => (ITEM_TYPE_BLOB, mode),
-    "120000" => (ITEM_TYPE_COMMIT, mode),
-    _ => panic!("Unknown mode: {}", mode),
+    "40000" => Ok((ITEM_TYPE_TREE, MODE_TREE)),
+    "100644" | "100755" => Ok((ITEM_TYPE_BLOB, mode)),
+    "120000" => Ok((ITEM_TYPE_COMMIT, mode)),
+    _ => Err(format!("Unknown mode: {}", mode)),
   }
 }
