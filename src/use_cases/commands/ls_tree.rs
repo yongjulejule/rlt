@@ -23,6 +23,7 @@ const MAX_DEPTH: usize = 42;
 const MODE_TREE: &str = "040000";
 const ITEM_TYPE_TREE: &str = "tree";
 const ITEM_TYPE_BLOB: &str = "blob";
+const ITEM_TYPE_COMMIT: &str = "commit";
 
 impl<'a> LsTree<'a> {
   pub fn new(
@@ -66,16 +67,16 @@ impl<'a> LsTree<'a> {
       .iter()
       .filter(|entry| {
         // NOTE: path arguments not supported in recursive mode
-        paths.is_empty() || paths.contains(&entry.name) || recurse
+        recurse || paths.is_empty() || paths.contains(&entry.name)
       })
       .map(|entry| {
         let full_name = parent_directory
           .map(|dir| format!("{}/{}", dir, entry.name))
           .unwrap_or_else(|| entry.name.clone());
-        let is_entry_tree = is_tree(entry.mode.as_str());
+        let (object_type, object_mode) = determine_type(entry.mode.as_str());
 
-        match (is_entry_tree, recurse) {
-          (true, true) => {
+        match (object_type, recurse) {
+          (ITEM_TYPE_TREE, true) => {
             let raw_object = self.object_service.find(&entry.hash)?;
             let subtree = TreeObject::parse(&entry.hash, &raw_object.data)?;
             self.list_tree(
@@ -86,13 +87,9 @@ impl<'a> LsTree<'a> {
               depth + 1,
             )
           }
-          (true, false) => Ok(vec![format!(
+          _ => Ok(vec![format!(
             "{} {} {}\t{}\n",
-            MODE_TREE, ITEM_TYPE_TREE, entry.hash, full_name
-          )]),
-          (false, _) => Ok(vec![format!(
-            "{} {} {}\t{}\n",
-            entry.mode, ITEM_TYPE_BLOB, entry.hash, full_name
+            object_mode, object_type, entry.hash, full_name
           )]),
         }
       })
@@ -101,6 +98,11 @@ impl<'a> LsTree<'a> {
   }
 }
 
-fn is_tree(mode: &str) -> bool {
-  mode == "40000"
+fn determine_type(mode: &str) -> (&str, &str) {
+  match mode {
+    "40000" => (ITEM_TYPE_TREE, "040000"),
+    "100644" | "100755" => (ITEM_TYPE_BLOB, mode),
+    "120000" => (ITEM_TYPE_COMMIT, mode),
+    _ => panic!("Unknown mode: {}", mode),
+  }
 }
