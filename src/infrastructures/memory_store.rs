@@ -61,4 +61,14 @@ mod tests {
     let read_data = store.read("not found");
     assert!(read_data.is_err());
   }
+
+  #[test]
+  fn test_exists() {
+    let store = MemoryStore::new();
+    let key = "test";
+    let data = "test data".as_bytes();
+    store.write(key, data).unwrap();
+    assert!(store.exists(key).unwrap());
+    assert!(!store.exists("not found").unwrap());
+  }
 }
