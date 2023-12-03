@@ -24,11 +24,13 @@ pub struct IndexServiceImpl {
 }
 
 impl IndexServiceImpl {
+  #[allow(dead_code)]
   pub fn new() -> Self {
     let index = Index::new();
     Self { index }
   }
 
+  #[allow(dead_code)]
   pub fn from_index(index: Index) -> Self {
     Self { index }
   }
@@ -194,6 +196,8 @@ impl IndexService for IndexServiceImpl {
     Ok(())
   }
 
+  // TODO: implement
+  #[allow(unused_variables)]
   fn update_extension(&self, extension_type: &str) -> Result<String, String> {
     todo!()
   }

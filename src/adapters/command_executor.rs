@@ -19,6 +19,7 @@ use crate::{
     },
     core::{
       ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
+      revision_service::RevisionServiceImpl,
     },
   },
 };
@@ -83,6 +84,7 @@ impl CommandExecutor {
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());
     let ignore_raw = provider.get_contents(".gitignore".to_string());
     let ignore_service = IgnoreServiceImpl::from_raw(&ignore_raw.as_bytes())?;
+    let revision_service = RevisionServiceImpl::new(store.as_ref());
 
     trace!("command: {:?}", command);
 

@@ -9,6 +9,7 @@ pub struct MemoryStore {
 }
 
 impl MemoryStore {
+  #[allow(dead_code)] // NOTE: for testing
   pub fn new() -> Self {
     MemoryStore {
       store: RwLock::new(HashMap::new()),
@@ -17,16 +18,21 @@ impl MemoryStore {
 }
 
 impl DataStore for MemoryStore {
-  fn read(&self, key: &str) -> Result<Vec<u8>, std::io::Error> {
-    let store = self.store.read().unwrap();
-    store.get(key).cloned().ok_or(std::io::Error::new(
-      std::io::ErrorKind::NotFound,
-      "Key not found",
-    ))
+  fn read(&self, key: &str) -> Result<Vec<u8>, String> {
+    let store = self.store.read().map_err(|e| e.to_string())?;
+    store
+      .get(key)
+      .cloned()
+      .ok_or_else(|| format!("Not found: {}", key))
   }
 
-  fn write(&self, key: &str, data: &[u8]) -> Result<(), std::io::Error> {
-    let mut store = self.store.write().unwrap();
+  fn exists(&self, key: &str) -> Result<bool, String> {
+    let store = self.store.read().map_err(|e| e.to_string())?;
+    Ok(store.contains_key(key))
+  }
+
+  fn write(&self, key: &str, data: &[u8]) -> Result<(), String> {
+    let mut store = self.store.write().map_err(|e| e.to_string())?;
     store.insert(key.to_string(), data.to_vec());
     Ok(())
   }
@@ -54,5 +60,15 @@ mod tests {
     store.write(key, data).unwrap();
     let read_data = store.read("not found");
     assert!(read_data.is_err());
+  }
+
+  #[test]
+  fn test_exists() {
+    let store = MemoryStore::new();
+    let key = "test";
+    let data = "test data".as_bytes();
+    store.write(key, data).unwrap();
+    assert!(store.exists(key).unwrap());
+    assert!(!store.exists("not found").unwrap());
   }
 }

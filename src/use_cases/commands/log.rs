@@ -1,10 +1,10 @@
-use crate::use_cases::core::commit_helper::FormatCommitVisitor;
+use crate::use_cases::core::commit_visitor::FormatCommitVisitor;
 use log::trace;
 
 use crate::{
   adapters::data_store::DataStore,
   use_cases::core::{
-    commit_helper::traverse_commits, object_service::ObjectService,
+    commit_visitor::traverse_commits, object_service::ObjectService,
   },
 };
 

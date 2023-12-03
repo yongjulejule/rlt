@@ -33,6 +33,8 @@ pub struct TreeObject {
   pub size: usize,
 }
 
+// TODO: implement TreeExtension
+#[allow(dead_code)]
 pub struct TreeExtension {
   pub signature: String,
   pub data: String,
