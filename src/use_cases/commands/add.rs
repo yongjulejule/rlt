@@ -3,6 +3,8 @@ use crate::adapters::{
   workspace_provider::WorkspaceProvider,
 };
 
+// TODO
+#[allow(dead_code)]
 pub struct Add<'a> {
   pub root_path: &'a str,
   object_manager: &'a dyn ObjectManager,
