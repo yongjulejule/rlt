@@ -17,3 +17,7 @@ pub fn check_content_size(
   }
   return Ok(());
 }
+
+pub fn is_sha1(hash: &str) -> bool {
+  return hash.len() == 40 && hash.chars().all(|c| c.is_ascii_hexdigit());
+}

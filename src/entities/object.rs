@@ -120,8 +120,9 @@ pub struct CommitObject {
 }
 
 impl CommitObject {
-  pub fn parse(hash: &str, data: &str) -> Result<Self, String> {
-    let mut lines = data.lines();
+  pub fn parse(hash: &str, data: &[u8]) -> Result<Self, String> {
+    let data_str = String::from_utf8_lossy(data);
+    let mut lines = data_str.lines();
     let mut tree = String::new();
     let mut parents = Vec::new();
     let mut author = String::new();
@@ -195,7 +196,7 @@ mod tests {
   #[test]
   fn parse_commit() {
     let hash = "test-hash";
-    let content = "tree test-tree\nparent test-parent\nauthor test-author\ncommitter test-committer\n\nmessage";
+    let content = b"tree test-tree\nparent test-parent\nauthor test-author\ncommitter test-committer\n\nmessage";
 
     let expected = CommitObject {
       tree: "test-tree".to_string(),
@@ -209,7 +210,7 @@ mod tests {
       gpg_sig: None,
     };
 
-    let result = CommitObject::parse(hash, &content).unwrap();
+    let result = CommitObject::parse(hash, content).unwrap();
 
     assert_eq!(result, expected);
   }

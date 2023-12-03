@@ -1,4 +1,7 @@
-use crate::use_cases::core::commit_visitor::FormatCommitVisitor;
+use crate::use_cases::core::{
+  commit_visitor::FormatCommitVisitor,
+  revision_service::{self, RevisionService},
+};
 use log::trace;
 
 use crate::{
@@ -13,6 +16,7 @@ pub struct LogOptions {
   is_oneline: bool,
   abbrev_commit: Option<u8>,
   no_abbrev_commit: bool,
+  revision_range: Option<String>,
   stat: bool,
 }
 
@@ -21,12 +25,14 @@ impl LogOptions {
     is_oneline: bool,
     abbrev_commit: Option<u8>,
     no_abbrev_commit: bool,
+    revision_range: Option<String>,
     stat: bool,
   ) -> Self {
     return Self {
       is_oneline,
       abbrev_commit,
       no_abbrev_commit,
+      revision_range,
       stat,
     };
   }
@@ -35,6 +41,7 @@ impl LogOptions {
 pub struct Log<'a> {
   store: &'a dyn DataStore,
   object_service: &'a dyn ObjectService,
+  revision_service: &'a dyn RevisionService,
   options: LogOptions,
 }
 
@@ -42,30 +49,29 @@ impl<'a> Log<'a> {
   pub fn new(
     store: &'a dyn DataStore,
     object_service: &'a dyn ObjectService,
+    revision_service: &'a dyn RevisionService,
     options: LogOptions,
   ) -> Self {
     return Self {
       store,
       object_service,
+      revision_service,
       options,
     };
   }
 
   pub fn run(&self) -> Result<String, String> {
     trace!("Log: {:?}", self.options);
-    let head = self.store.read("HEAD").map_err(|e| e.to_string())?;
-    let ref_name = String::from_utf8_lossy(&head)
-      .trim_start_matches("ref: ")
-      .trim_end()
-      .to_string();
-    trace!("ref_name: {:?}", ref_name);
 
-    let current_object_hash_raw =
-      self.store.read(&ref_name).map_err(|e| e.to_string())?;
-    let current_object_hash = String::from_utf8_lossy(&current_object_hash_raw)
-      .trim_end()
-      .to_string();
+    let revision = match self.options.revision_range.as_ref() {
+      Some(revision) => revision,
+      None => "HEAD",
+    };
+
+    let current_object_hash = self.revision_service.resolve(&revision)?;
+
     trace!("current_object_hash: {:?}", current_object_hash);
+
     let head_object_raw = self
       .object_service
       .find(&current_object_hash)

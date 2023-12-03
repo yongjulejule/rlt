@@ -156,6 +156,9 @@ pub struct LogArgs {
 
   #[arg(long = "stat", default_value = "false")]
   pub stat: bool,
+
+  #[arg(value_name = "revision_range")]
+  pub revision_range: Option<String>,
 }
 
 #[derive(Debug, Args, PartialEq, Eq)]

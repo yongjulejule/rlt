@@ -138,11 +138,13 @@ impl CommandExecutor {
           log_args.is_oneline,
           log_args.abbrev_commit,
           log_args.no_abbrev_commit,
+          log_args.revision_range,
           log_args.stat,
         );
 
         let result =
-          Log::new(store.as_ref(), &object_service, options).run()?;
+          Log::new(store.as_ref(), &object_service, &revision_service, options)
+            .run()?;
 
         println!("{}", result);
         Ok(())
@@ -150,15 +152,15 @@ impl CommandExecutor {
       Commands::LsTree(ls_tree_args) => {
         trace!("LsTree");
 
-        let result = LsTree::new(
-          &object_service,
-          LsTreeOptions {
-            recurse: ls_tree_args.recurse,
-            tree_ish: ls_tree_args.tree_ish,
-            path: ls_tree_args.path,
-          },
-        )
-        .run()?;
+        let ls_tree_options = LsTreeOptions {
+          recurse: ls_tree_args.recurse,
+          tree_ish: ls_tree_args.tree_ish,
+          path: ls_tree_args.path,
+        };
+
+        let result =
+          LsTree::new(&object_service, &revision_service, ls_tree_options)
+            .run()?;
 
         println!("{}", result);
         Ok(())
