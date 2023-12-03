@@ -18,21 +18,21 @@ impl MemoryStore {
 }
 
 impl DataStore for MemoryStore {
-  fn read(&self, key: &str) -> Result<Vec<u8>, std::io::Error> {
-    let store = self.store.read().unwrap();
-    store.get(key).cloned().ok_or(std::io::Error::new(
-      std::io::ErrorKind::NotFound,
-      "Key not found",
-    ))
+  fn read(&self, key: &str) -> Result<Vec<u8>, String> {
+    let store = self.store.read().map_err(|e| e.to_string())?;
+    store
+      .get(key)
+      .cloned()
+      .ok_or_else(|| format!("Not found: {}", key))
   }
 
-  fn exists(&self, key: &str) -> bool {
-    let store = self.store.read().unwrap();
-    store.contains_key(key)
+  fn exists(&self, key: &str) -> Result<bool, String> {
+    let store = self.store.read().map_err(|e| e.to_string())?;
+    Ok(store.contains_key(key))
   }
 
-  fn write(&self, key: &str, data: &[u8]) -> Result<(), std::io::Error> {
-    let mut store = self.store.write().unwrap();
+  fn write(&self, key: &str, data: &[u8]) -> Result<(), String> {
+    let mut store = self.store.write().map_err(|e| e.to_string())?;
     store.insert(key.to_string(), data.to_vec());
     Ok(())
   }

@@ -63,7 +63,7 @@ impl<'a> RevisionService for RevisionServiceImpl<'a> {
     ref_rules
       .iter()
       .map(|rule| rule(ref_name))
-      .find(|candidate| self.store.exists(candidate))
+      .find(|candidate| self.store.exists(candidate).unwrap_or(false))
       .map_or_else(|| Err(format!("Not found ref: {}", ref_name)), Ok)
   }
 }
