@@ -9,6 +9,7 @@ pub struct MemoryStore {
 }
 
 impl MemoryStore {
+  #[allow(dead_code)] // NOTE: for testing
   pub fn new() -> Self {
     MemoryStore {
       store: RwLock::new(HashMap::new()),
@@ -23,6 +24,11 @@ impl DataStore for MemoryStore {
       std::io::ErrorKind::NotFound,
       "Key not found",
     ))
+  }
+
+  fn exists(&self, key: &str) -> bool {
+    let store = self.store.read().unwrap();
+    store.contains_key(key)
   }
 
   fn write(&self, key: &str, data: &[u8]) -> Result<(), std::io::Error> {

@@ -28,6 +28,11 @@ impl DataStore for FileStore {
     Ok(data)
   }
 
+  fn exists(&self, key: &str) -> bool {
+    let src_path = self.store_dir.join(key);
+    src_path.exists()
+  }
+
   fn write(&self, key: &str, data: &[u8]) -> Result<(), std::io::Error> {
     let dest_path = self.store_dir.join(key);
     if key.ends_with("/") {
