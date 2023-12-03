@@ -82,10 +82,7 @@ pub fn traverse_commits<'a>(
   while let Some(current_hash) = stack.pop() {
     match service.find(&current_hash) {
       Ok(raw_object) => {
-        let commit = CommitObject::parse(
-          &current_hash,
-          &String::from_utf8_lossy(&raw_object.data),
-        )?;
+        let commit = CommitObject::parse(&current_hash, &raw_object.data)?;
         result.push(visitor.visit_commit(&commit));
 
         for parent_hash in commit.parents.iter() {

@@ -8,6 +8,10 @@ pub trait ObjectService {
   fn create_key(&self, object_type: &str, content: &str) -> String;
   fn find(&self, key: &str) -> Result<Object, String>;
   fn delete(&self) -> Result<(), String>;
+  fn is_object_hash(&self, hash: &str) -> bool {
+    // TODO: consider sha256 later
+    return hash.len() == 40 && hash.chars().all(|c| c.is_ascii_hexdigit());
+  }
 }
 
 pub struct ObjectServiceImpl<'a> {

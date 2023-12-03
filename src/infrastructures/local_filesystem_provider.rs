@@ -17,7 +17,7 @@ impl LocalFilesystemProvider {
 impl WorkspaceProvider for LocalFilesystemProvider {
   fn get_contents(&self, key: String) -> String {
     let path = self.workspace_root.join(key);
-    return fs::read_to_string(path).unwrap();
+    return fs::read_to_string(path).unwrap_or_else(|e| e.to_string());
   }
 
   fn set_contents(&mut self, key: String, contents: String) {

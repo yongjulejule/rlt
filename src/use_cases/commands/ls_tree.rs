@@ -3,8 +3,10 @@ use std::collections::BTreeSet;
 use log::trace;
 
 use crate::{
-  entities::object::{TreeElement, TreeObject},
-  use_cases::core::object_service::ObjectService,
+  entities::object::{CommitObject, TreeElement, TreeObject},
+  use_cases::core::{
+    object_service::ObjectService, revision_service::RevisionService,
+  },
 };
 
 #[derive(Debug)]
@@ -16,6 +18,7 @@ pub struct LsTreeOptions {
 
 pub struct LsTree<'a> {
   object_service: &'a dyn ObjectService,
+  revision_service: &'a dyn RevisionService,
   options: LsTreeOptions,
 }
 
@@ -28,10 +31,12 @@ const ITEM_TYPE_COMMIT: &str = "commit";
 impl<'a> LsTree<'a> {
   pub fn new(
     object_service: &'a dyn ObjectService,
+    revision_service: &'a dyn RevisionService,
     options: LsTreeOptions,
   ) -> Self {
     return Self {
       object_service,
+      revision_service,
       options,
     };
   }
@@ -39,8 +44,25 @@ impl<'a> LsTree<'a> {
   pub fn run(&self) -> Result<String, String> {
     trace!("LsTree: {:?}", self.options);
 
-    let raw_object = self.object_service.find(&self.options.tree_ish)?;
-    let tree = TreeObject::parse(&self.options.tree_ish, &raw_object.data)?;
+    let raw_hash =
+      match self.object_service.is_object_hash(&self.options.tree_ish) {
+        true => self.options.tree_ish.clone(),
+        false => {
+          let commit_hash =
+            self.revision_service.resolve(&self.options.tree_ish)?;
+          let commit_object_raw = self.object_service.find(&commit_hash)?;
+          CommitObject::parse(&commit_hash, &commit_object_raw.data)?.tree
+        }
+      };
+
+    trace!("raw_hash: {}", raw_hash);
+    let raw_object = self.object_service.find(&raw_hash)?;
+    trace!("raw_object: {:?}", raw_object);
+    trace!(
+      "raw_object.data: {:?}",
+      String::from_utf8(raw_object.data.clone())
+    );
+    let tree = TreeObject::parse(&raw_hash, &raw_object.data)?;
     trace!("tree: {:?}", tree);
 
     let paths = BTreeSet::from_iter(self.options.path.clone());
