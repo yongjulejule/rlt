@@ -36,7 +36,7 @@ pub struct IndexEntry {
   pub uid: u32,
   pub gid: u32,
   pub size: u64,
-  pub hash: String,
+  pub hash: Vec<u8>,
   pub flags: u16,
   pub name: String,
 }

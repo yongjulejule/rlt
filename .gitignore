@@ -4,5 +4,6 @@ target
 .obsidian/workspace.json
 
 .DS_Store
+**/.DS_Store
 
 rlt-prod

@@ -35,6 +35,7 @@ impl<'a> HashObject<'a> {
       .map(|p| {
         // hash with object type & content in path
         let content = self.provider.get_contents(p.to_string());
+        println!("content: {:?}", content);
         let key = self.object_service.create_key(&self.object_type, &content);
         if self.write {
           let object = Object::new(

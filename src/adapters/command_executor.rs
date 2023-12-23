@@ -19,7 +19,9 @@ use crate::{
       status::Status,
     },
     core::{
-      ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
+      ignore_service::IgnoreServiceImpl,
+      index_service::{IndexService, IndexServiceImpl},
+      object_service::ObjectServiceImpl,
       revision_service::RevisionServiceImpl,
     },
   },
@@ -162,17 +164,26 @@ impl CommandExecutor {
         let result =
           LsTree::new(&object_service, &revision_service, ls_tree_options)
             .run()?;
-
-        println!("{}", result);
+        result.iter().for_each(|r| {
+          println!("{} {} {}\t{}\n", r.object_type, r.mode, r.hash, r.name)
+        });
         Ok(())
       }
 
       Commands::Status {} => {
         trace!("Status");
-        let result =
-          Status::new(store.as_ref(), provider.as_ref(), &ignore_service)
-            .run()?;
-        println!("{:?}", result);
+        let result = Status::new(
+          store.as_ref(),
+          provider.as_ref(),
+          &ignore_service,
+          &object_service,
+          &revision_service,
+          hasher.as_ref(),
+        )
+        .run()?;
+        println!("staged: {:?}", result.staged);
+        println!("unstaged: {:?}", result.unstaged);
+        println!("untracked: {:?}", result.untracked);
         Ok(())
       }
 

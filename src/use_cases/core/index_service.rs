@@ -58,10 +58,7 @@ impl IndexServiceImpl {
       let gid = parse_u32(&data, start, GID_OFFSET)?;
       let size = parse_u32(&data, start, SIZE_OFFSET)?;
 
-      let hash = String::from_utf8_lossy(
-        &data[start + HASH_OFFSET..start + HASH_OFFSET + 20],
-      )
-      .to_string();
+      let hash = &data[start + HASH_OFFSET..start + HASH_OFFSET + 20];
       let flags = parse_u16(&data, start, FLAGS_OFFSET)?;
 
       let name_length = if (flags & 0xfff) >= 0xfff {
@@ -92,7 +89,7 @@ impl IndexServiceImpl {
         uid,
         gid,
         size: size as u64,
-        hash,
+        hash: hash.clone().to_vec(),
         flags,
         name,
       };
@@ -178,7 +175,13 @@ impl IndexService for IndexServiceImpl {
       uid: metadata.uid(),
       gid: metadata.gid(),
       size: metadata.size(),
-      hash: key.to_string(),
+      hash: key
+        .as_bytes()
+        .chunks(2)
+        .map(|x| {
+          u8::from_str_radix(std::str::from_utf8(x).unwrap(), 16).unwrap()
+        })
+        .collect(),
       flags: 0,
       name: file_path.to_string(),
     };
