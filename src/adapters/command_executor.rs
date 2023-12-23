@@ -179,9 +179,30 @@ impl CommandExecutor {
         )
         .run()?;
 
-        println!("staged: {:?}", result.staged);
-        println!("unstaged: {:?}", result.unstaged);
-        println!("untracked: {:?}", result.untracked);
+        println!("Result for status 👋 \n");
+        let printer = &|(status, path): &(String, String)| {
+          let red = "\x1b[31m";
+          let green = "\x1b[32m";
+          let reset = "\x1b[0m";
+          match status.as_str() {
+            "deleted" => println!("💩 {}\t{}: {}{}", red, status, path, reset),
+            "modified" => {
+              println!("🪄 {}\t{}: {}{}", green, status, path, reset)
+            }
+            "new file" => {
+              println!("✨ {}\t{}: {}{}", green, status, path, reset)
+            }
+            _ => {}
+          }
+        };
+        println!("Changes to be committed 💌 :");
+        result.staged.iter().for_each(printer);
+        println!("Changes not staged for commit 💤 :");
+        result.unstaged.iter().for_each(printer);
+        println!("Untracked files 👽 :");
+        result.untracked.iter().for_each(|path| {
+          println!("\t{}:\t{}\n", "new file", path);
+        });
         Ok(())
       }
 
