@@ -6,4 +6,5 @@ pub mod init;
 pub mod log;
 pub mod ls_files;
 pub mod ls_tree;
+pub mod status;
 pub mod utils;

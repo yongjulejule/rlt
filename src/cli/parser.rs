@@ -67,6 +67,10 @@ pub enum Commands {
     /// The remote to clone
     remote: String,
   },
+
+  #[command(about = "Show the working tree status")]
+  Status {},
+
   /// Compare two commits
   Diff {
     #[arg(value_name = "COMMIT")]

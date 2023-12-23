@@ -31,11 +31,14 @@ mod test {
     let cb = &mut |entry: &DirEntry| {
       let path = entry.path();
       let file_name = path.file_name().unwrap().to_str().unwrap();
+      println!("visit ! {:?}", entry);
       files.push(file_name.to_string());
     };
     let dir = PathBuf::from("./src");
     visit_dirs(&dir, cb).unwrap();
     info!("{:?}", files);
+    println!("visit ! {:?}", files);
+
     // assert_eq!(files.len(), 2);
     // assert_eq!(files[0], "test.txt");
     // assert_eq!(files[1], "test2.txt");

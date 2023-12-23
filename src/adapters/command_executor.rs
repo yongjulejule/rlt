@@ -16,6 +16,7 @@ use crate::{
       log::{Log, LogOptions},
       ls_files::LsFiles,
       ls_tree::{LsTree, LsTreeOptions},
+      status::Status,
     },
     core::{
       ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
@@ -120,7 +121,7 @@ impl CommandExecutor {
 
       Commands::LsFiles {} => {
         let result = LsFiles::new(store.as_ref()).run();
-        trace!("{}", result.ok().unwrap().join("\n"));
+        println!("{}", result.ok().unwrap().join("\n"));
         Ok(())
       }
 
@@ -163,6 +164,15 @@ impl CommandExecutor {
             .run()?;
 
         println!("{}", result);
+        Ok(())
+      }
+
+      Commands::Status {} => {
+        trace!("Status");
+        let result =
+          Status::new(store.as_ref(), provider.as_ref(), &ignore_service)
+            .run()?;
+        println!("{:?}", result);
         Ok(())
       }
 
