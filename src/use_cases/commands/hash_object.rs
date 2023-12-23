@@ -34,16 +34,12 @@ impl<'a> HashObject<'a> {
       .iter()
       .map(|p| {
         // hash with object type & content in path
-        let content = self.provider.get_contents(p.to_string());
-        println!("content: {:?}", content);
+        let content = self.provider.get_contents(p.to_string()).unwrap();
         let key = self.object_service.create_key(&self.object_type, &content);
+        println!("key: {:?}", key);
         if self.write {
-          let object = Object::new(
-            &key,
-            &self.object_type,
-            content.as_bytes(),
-            content.len(),
-          );
+          let object =
+            Object::new(&key, &self.object_type, &content, content.len());
           let _ = self.object_service.save(&object);
         }
         return key;
@@ -73,7 +69,7 @@ mod tests {
       .write("test", b"test-body")
       .expect("write test");
     let mut provider = TestContentProvider::new();
-    provider.set_contents("test".to_string(), "test-body".to_string());
+    provider.set_contents("test".to_string(), b"test-body");
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
 
     let object_service =
@@ -100,7 +96,7 @@ mod tests {
       .write("test", b"test-body")
       .expect("write test");
     let mut provider = TestContentProvider::new();
-    provider.set_contents("test".to_string(), "test-body".to_string());
+    provider.set_contents("test".to_string(), b"test-body");
     let hasher = hasher::HasherFactory::new().get_hasher("sha256".to_string());
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());
@@ -124,7 +120,7 @@ mod tests {
     let store = MemoryStore::new();
     let object_manager = ObjectManagerImpl::new(&store);
     let mut provider = TestContentProvider::new();
-    provider.set_contents("test".to_string(), "test-body".to_string());
+    provider.set_contents("test".to_string(), b"test-body");
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());

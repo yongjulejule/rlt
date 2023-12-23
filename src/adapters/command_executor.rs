@@ -19,9 +19,7 @@ use crate::{
       status::Status,
     },
     core::{
-      ignore_service::IgnoreServiceImpl,
-      index_service::{IndexService, IndexServiceImpl},
-      object_service::ObjectServiceImpl,
+      ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
       revision_service::RevisionServiceImpl,
     },
   },
@@ -85,8 +83,8 @@ impl CommandExecutor {
     let object_manager = ObjectManagerImpl::new(store.as_ref());
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());
-    let ignore_raw = provider.get_contents(".gitignore".to_string());
-    let ignore_service = IgnoreServiceImpl::from_raw(&ignore_raw.as_bytes())?;
+    let ignore_raw = provider.get_contents(".gitignore".to_string()).unwrap();
+    let ignore_service = IgnoreServiceImpl::from_raw(&ignore_raw)?;
     let revision_service = RevisionServiceImpl::new(store.as_ref());
 
     trace!("command: {:?}", command);
@@ -178,9 +176,9 @@ impl CommandExecutor {
           &ignore_service,
           &object_service,
           &revision_service,
-          hasher.as_ref(),
         )
         .run()?;
+
         println!("staged: {:?}", result.staged);
         println!("unstaged: {:?}", result.unstaged);
         println!("untracked: {:?}", result.untracked);

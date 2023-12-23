@@ -23,12 +23,12 @@ mod tests {
   fn test_add() {
     // let execution_path = ".";
     let files = vec![
-      ("test.txt", "test-body"),
-      ("test/test.txt", "test-body-with-dir"),
+      ("test.txt", b"test-body".to_vec()),
+      ("test/test.txt", b"test-body-with-dir".to_vec()),
     ];
     let mut provider = TestContentProvider::new();
     files.into_iter().for_each(|(k, v)| {
-      provider.set_contents(k.to_string(), v.to_string());
+      provider.set_contents(k.to_string(), &v);
     });
     // let store = MemoryStore::new();
 

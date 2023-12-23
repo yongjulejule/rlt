@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::adapters::workspace_provider::WorkspaceProvider;
 
 pub struct TestContentProvider {
-  contents: HashMap<String, String>,
+  contents: HashMap<String, Vec<u8>>,
 }
 
 #[allow(dead_code)]
@@ -16,16 +16,17 @@ impl TestContentProvider {
 }
 
 impl WorkspaceProvider for TestContentProvider {
-  fn get_contents(&self, key: String) -> String {
-    return self
-      .contents
-      .get(&key)
-      .unwrap_or(&"".to_string())
-      .to_string();
+  fn get_contents(&self, key: String) -> Result<Vec<u8>, String> {
+    return Ok(self.contents.get(&key).map(|v| v.to_vec()).unwrap());
   }
 
-  fn set_contents(&mut self, key: String, contents: String) {
-    self.contents.insert(key, contents);
+  fn set_contents(
+    &mut self,
+    key: String,
+    contents: &[u8],
+  ) -> Result<(), String> {
+    self.contents.insert(key, contents.to_vec());
+    Ok(())
   }
 }
 
@@ -36,14 +37,14 @@ mod tests {
   #[test]
   fn test_get_contents() {
     let mut provider = TestContentProvider::new();
-    provider.set_contents("foo".to_string(), "bar".to_string());
-    assert_eq!(provider.get_contents("foo".to_string()), "bar".to_string());
+    provider.set_contents("foo".to_string(), b"bar");
+    assert_eq!(provider.get_contents("foo".to_string()).unwrap(), b"bar");
   }
 
   #[test]
   fn test_set_contents() {
     let mut provider = TestContentProvider::new();
-    provider.set_contents("foo".to_string(), "bar".to_string());
-    assert_eq!(provider.get_contents("foo".to_string()), "bar".to_string());
+    provider.set_contents("foo".to_string(), b"bar");
+    assert_eq!(provider.get_contents("foo".to_string()).unwrap(), b"bar");
   }
 }

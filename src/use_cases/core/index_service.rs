@@ -228,7 +228,7 @@ mod tests {
   fn test_entry_creation() {
     let index_service = IndexServiceImpl::new();
 
-    let entry = index_service.create_entry_from_file("test-key", TEST_INDEX);
+    let entry = index_service.create_entry_from_file("010203", TEST_INDEX);
 
     info!("{:?}", entry);
     assert_eq!(entry.is_ok(), true);
@@ -238,7 +238,7 @@ mod tests {
   #[test]
   fn test_entry_save() {
     let mut index_service = IndexServiceImpl::new();
-    let entry = index_service.create_entry_from_file("test-key", TEST_INDEX);
+    let entry = index_service.create_entry_from_file("010203", TEST_INDEX);
     index_service.save_entry(entry.unwrap());
 
     assert_eq!(index_service.get_index().entries_count, 1);

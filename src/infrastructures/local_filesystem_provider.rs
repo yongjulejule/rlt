@@ -1,4 +1,8 @@
-use std::{fs, path::PathBuf};
+use std::{
+  fs::{File, OpenOptions},
+  io::{Read, Write},
+  path::PathBuf,
+};
 
 use crate::adapters::workspace_provider::WorkspaceProvider;
 
@@ -15,13 +19,28 @@ impl LocalFilesystemProvider {
 }
 
 impl WorkspaceProvider for LocalFilesystemProvider {
-  fn get_contents(&self, key: String) -> String {
+  fn get_contents(&self, key: String) -> Result<Vec<u8>, String> {
     let path = self.workspace_root.join(key);
-    return fs::read_to_string(path).unwrap_or_else(|e| e.to_string());
+    let mut file: File = OpenOptions::new()
+      .read(true)
+      .open(path)
+      .map_err(|e| e.to_string())?;
+    let mut buf = Vec::new();
+    file.read_to_end(&mut buf).map_err(|e| e.to_string())?;
+    return Ok(buf);
   }
 
-  fn set_contents(&mut self, key: String, contents: String) {
+  fn set_contents(
+    &mut self,
+    key: String,
+    contents: &[u8],
+  ) -> Result<(), String> {
     let path = self.workspace_root.join(key);
-    fs::write(path, contents).unwrap();
+    let mut file: File = OpenOptions::new()
+      .write(true)
+      .create(true)
+      .open(path)
+      .map_err(|e| e.to_string())?;
+    file.write_all(contents).map_err(|e| e.to_string())
   }
 }

@@ -2,10 +2,12 @@ use crate::{
   adapters::{compressor, hasher::Hasher, object_manager::ObjectManager},
   entities::object::Object,
 };
+use sha1::Sha1;
+use sha2::{Digest, Sha256};
 
 pub trait ObjectService {
   fn save(&self, object: &Object) -> Result<String, String>;
-  fn create_key(&self, object_type: &str, content: &str) -> String;
+  fn create_key(&self, object_type: &str, content: &[u8]) -> String;
   fn find(&self, key: &str) -> Result<Object, String>;
   fn delete(&self) -> Result<(), String>;
   fn is_object_hash(&self, hash: &str) -> bool {
@@ -31,10 +33,21 @@ impl<'a> ObjectServiceImpl<'a> {
   }
 }
 
+fn hash(data: &[u8]) -> String {
+  let mut hasher = sha1::Sha1::new();
+  hasher.update(data);
+  let result = hasher.finalize();
+  return format!("{:x}", result);
+}
+
 impl<'a> ObjectService for ObjectServiceImpl<'a> {
-  fn create_key(&self, object_type: &str, content: &str) -> String {
-    let object = format!("{} {}\0{}", object_type, content.len(), content);
-    self.hasher.hash(&object)
+  fn create_key(&self, object_type: &str, content: &[u8]) -> String {
+    let mut new_object = object_type.as_bytes().to_vec();
+    new_object.push(b' ');
+    new_object.extend_from_slice(content.len().to_string().as_bytes());
+    new_object.push(b'\0');
+    new_object.extend_from_slice(&content);
+    self.hasher.hash(&new_object)
   }
 
   fn save(&self, object: &Object) -> Result<String, String> {
@@ -119,10 +132,8 @@ mod tests {
 
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());
-    let key = object_service.create_key(
-      &test_object.object_type,
-      &String::from_utf8_lossy(&test_object.data),
-    );
+    let key =
+      object_service.create_key(&test_object.object_type, &test_object.data);
 
     let result = hasher.hash(&format!(
       "{} {}\0{}",
