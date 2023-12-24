@@ -1,5 +1,7 @@
 use std::{collections::BTreeMap, fs::DirEntry, path::Path};
 
+use log::error;
+
 use crate::{
   adapters::{
     data_store::DataStore, filesystem_utils::visit_dirs,
@@ -50,7 +52,10 @@ impl<'a> Status<'a> {
 
   pub fn run(&self) -> Result<StatusResult, String> {
     let mut local_file = BTreeMap::new();
-    let raw_data = self.store.read("index").map_err(|_| "Fail to read")?;
+    let raw_data = self
+      .store
+      .read("index")
+      .map_err(|_| "Fail to read index file")?;
     let staged_entries = IndexServiceImpl::from_raw(&raw_data)?
       .get_index()
       .clone()
@@ -59,7 +64,13 @@ impl<'a> Status<'a> {
 
     let cb = &mut |entry: &DirEntry| {
       let path = entry.path();
-      let path_str = path.to_str().unwrap();
+      let path_str = match path.to_str() {
+        Some(s) => s,
+        None => {
+          error!("Fail to convert path to string");
+          return;
+        }
+      };
       if self.ignore_service.is_ignored(path_str)
         || path_str.starts_with("./.git/")
       {
@@ -69,10 +80,15 @@ impl<'a> Status<'a> {
         untracked.push(path_str.to_string());
         return;
       }
-      let content = self.provider.get_contents(path_str.to_string()).unwrap();
+      let content = self.provider.get_contents(path_str.to_string());
+      if content.is_err() {
+        error!("Fail to get contents from path: {}", path_str);
+        return;
+      }
+
       local_file.insert(
         path.to_str().unwrap()[2..].to_string(),
-        self.object_service.create_key("blob", &content),
+        self.object_service.create_key("blob", &content.unwrap()),
       );
     };
 
@@ -145,27 +161,43 @@ impl<'a> Status<'a> {
 
 #[cfg(test)]
 mod tests {
+
+  use log::{debug, trace};
+
   use crate::{
+    adapters::{hasher, object_manager::ObjectManagerImpl},
     infrastructures::{
       memory_store::MemoryStore, test_content_provider::TestContentProvider,
     },
-    use_cases::core::ignore_service::IgnoreServiceImpl,
+    use_cases::core::{
+      ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
+      revision_service::RevisionServiceImpl,
+    },
   };
 
   use super::*;
 
   #[test]
   fn test_status() {
-    let memory_store = MemoryStore::new();
-    let store: Box<dyn DataStore> = Box::new(memory_store);
-    let ignore_service = IgnoreServiceImpl::from_raw(b"ignored\n").unwrap();
-    let mut provider: Box<dyn WorkspaceProvider> =
-      Box::new(TestContentProvider::new());
-    provider.set_contents("./test.txt".to_string(), b"test content\n");
-    provider.set_contents("./ignored/test2.txt".to_string(), b"test content\n");
-    //    let status =
-    //      Status::new(store.as_ref(), provider.as_ref(), &ignore_service);
-    //    let result = status.run();
-    //    assert!(result.is_ok());
+    let store = Box::new(MemoryStore::new());
+    let object_manager = ObjectManagerImpl::new(store.as_ref());
+    let provider = Box::new(TestContentProvider::new());
+    let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
+    let object_service =
+      ObjectServiceImpl::new(&object_manager, hasher.as_ref());
+    let ignore_service = IgnoreServiceImpl::from_raw(&[]).unwrap();
+    let revision_service = RevisionServiceImpl::new(store.as_ref());
+
+    let status = Status::new(
+      store.as_ref(),
+      provider.as_ref(),
+      &ignore_service,
+      &object_service,
+      &revision_service,
+    );
+
+    let result = status.run();
+    println!("result: {:?}", result);
+    assert_eq!(result.is_err(), true); // TODO!
   }
 }
