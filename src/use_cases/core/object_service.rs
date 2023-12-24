@@ -2,8 +2,6 @@ use crate::{
   adapters::{compressor, hasher::Hasher, object_manager::ObjectManager},
   entities::object::Object,
 };
-use sha1::Sha1;
-use sha2::{Digest, Sha256};
 
 pub trait ObjectService {
   fn save(&self, object: &Object) -> Result<String, String>;
@@ -31,13 +29,6 @@ impl<'a> ObjectServiceImpl<'a> {
       hasher,
     };
   }
-}
-
-fn hash(data: &[u8]) -> String {
-  let mut hasher = sha1::Sha1::new();
-  hasher.update(data);
-  let result = hasher.finalize();
-  return format!("{:x}", result);
 }
 
 impl<'a> ObjectService for ObjectServiceImpl<'a> {
@@ -135,12 +126,9 @@ mod tests {
     let key =
       object_service.create_key(&test_object.object_type, &test_object.data);
 
-    let result = hasher.hash(&format!(
-      "{} {}\0{}",
-      test_object.object_type,
-      test_object.size,
-      String::from_utf8_lossy(&test_object.data)
-    ));
+    let raw_data = b"blob 9\0test-data";
+
+    let result = hasher.hash(raw_data);
 
     assert_eq!(key, result);
   }

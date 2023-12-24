@@ -54,3 +54,32 @@ impl Hasher for Sha1Hasher {
     return format!("{:x}", result);
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_sha256_hasher() {
+    let hasher = Sha256Hasher::new();
+    let result = hasher.hash(b"test");
+    assert_eq!(
+      result,
+      "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+    );
+  }
+
+  #[test]
+  fn test_sha1_hasher() {
+    let hasher = Sha1Hasher::new();
+    let result = hasher.hash(b"test");
+    assert_eq!(result, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3");
+  }
+
+  #[test]
+  fn test_binary_hash() {
+    let hasher = Sha1Hasher::new();
+    let result = hasher.hash(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09");
+    assert_eq!(result, "494179714a6cd627239dfededf2de9ef994caf03");
+  }
+}

@@ -34,9 +34,14 @@ impl<'a> HashObject<'a> {
       .iter()
       .map(|p| {
         // hash with object type & content in path
-        let content = self.provider.get_contents(p.to_string()).unwrap();
+        let content =
+          self
+            .provider
+            .get_contents(p.to_string())
+            .unwrap_or_else(|_| {
+              panic!("Fail to get contents from path: {}", p);
+            });
         let key = self.object_service.create_key(&self.object_type, &content);
-        println!("key: {:?}", key);
         if self.write {
           let object =
             Object::new(&key, &self.object_type, &content, content.len());

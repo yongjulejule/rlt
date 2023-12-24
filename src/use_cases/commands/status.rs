@@ -2,7 +2,7 @@ use std::{collections::BTreeMap, fs::DirEntry, path::Path};
 
 use crate::{
   adapters::{
-    data_store::DataStore, filesystem_utils::visit_dirs, hasher,
+    data_store::DataStore, filesystem_utils::visit_dirs,
     workspace_provider::WorkspaceProvider,
   },
   use_cases::{
@@ -114,11 +114,7 @@ impl<'a> Status<'a> {
       }
     });
 
-    println!("commited {:?}", commited);
-    println!("local {:?}", local_file);
-
     staged_entries.iter().for_each(|(k, v)| {
-      println!("k: {}, v: {:?}", k, v);
       if !commited.iter().any(|e| e.name == k.as_str()) {
         staged.push(("new file".to_string(), k.to_string()));
       }
@@ -133,14 +129,11 @@ impl<'a> Status<'a> {
         .collect::<String>();
 
       if object_hash != local_file.get(k.as_str()).unwrap().as_str() {
-        println!("lo {}", local_file.get(k.as_str()).unwrap().as_str());
-        println!("ob {}", object_hash);
         unstaged.push(("modified".to_string(), k.to_string()));
       }
 
       local_file.remove(k.as_str());
     });
-    println!("local_file: {:?}", local_file);
 
     Ok(StatusResult {
       staged,

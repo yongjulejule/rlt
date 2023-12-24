@@ -179,9 +179,14 @@ impl IndexService for IndexServiceImpl {
         .as_bytes()
         .chunks(2)
         .map(|x| {
-          u8::from_str_radix(std::str::from_utf8(x).unwrap(), 16).unwrap()
+          std::str::from_utf8(x)
+            .map_err(|_| "Invalid UTF-8 sequence".to_string())
+            .and_then(|s| {
+              u8::from_str_radix(s, 16)
+                .map_err(|_| "Non-hexadecimal digit found".to_string())
+            })
         })
-        .collect(),
+        .collect::<Result<Vec<u8>, String>>()?,
       flags: 0,
       name: file_path.to_string(),
     };

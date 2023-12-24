@@ -83,7 +83,9 @@ impl CommandExecutor {
     let object_manager = ObjectManagerImpl::new(store.as_ref());
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());
-    let ignore_raw = provider.get_contents(".gitignore".to_string()).unwrap();
+    let ignore_raw = provider
+      .get_contents(".gitignore".to_string())
+      .unwrap_or_else(|_| b"".to_vec());
     let ignore_service = IgnoreServiceImpl::from_raw(&ignore_raw)?;
     let revision_service = RevisionServiceImpl::new(store.as_ref());
 
