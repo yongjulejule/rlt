@@ -51,7 +51,7 @@ mod run_tests {
   #[test]
   fn test_cat_file() {
     // setup
-    let test_content = "test-content";
+    let test_content = b"test-content";
     let store = Box::new(MemoryStore::new());
     let object_manager = ObjectManagerImpl::new(store.as_ref());
     let hasher = hasher::HasherFactory::new().get_hasher("sha1".to_string());
@@ -61,7 +61,7 @@ mod run_tests {
     let _ = object_service.save(&Object::new(
       "blob",
       &key,
-      test_content.as_bytes(),
+      test_content,
       test_content.len(),
     ));
 
@@ -72,6 +72,6 @@ mod run_tests {
       info!("error: {:?}", content);
       assert!(false);
     }
-    assert_eq!(content.unwrap(), test_content.to_string());
+    assert_eq!(content.unwrap().as_bytes(), test_content.to_vec());
   }
 }

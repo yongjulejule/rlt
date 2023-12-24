@@ -58,10 +58,7 @@ impl IndexServiceImpl {
       let gid = parse_u32(&data, start, GID_OFFSET)?;
       let size = parse_u32(&data, start, SIZE_OFFSET)?;
 
-      let hash = String::from_utf8_lossy(
-        &data[start + HASH_OFFSET..start + HASH_OFFSET + 20],
-      )
-      .to_string();
+      let hash = &data[start + HASH_OFFSET..start + HASH_OFFSET + 20];
       let flags = parse_u16(&data, start, FLAGS_OFFSET)?;
 
       let name_length = if (flags & 0xfff) >= 0xfff {
@@ -92,7 +89,7 @@ impl IndexServiceImpl {
         uid,
         gid,
         size: size as u64,
-        hash,
+        hash: hash.clone().to_vec(),
         flags,
         name,
       };
@@ -178,7 +175,18 @@ impl IndexService for IndexServiceImpl {
       uid: metadata.uid(),
       gid: metadata.gid(),
       size: metadata.size(),
-      hash: key.to_string(),
+      hash: key
+        .as_bytes()
+        .chunks(2)
+        .map(|x| {
+          std::str::from_utf8(x)
+            .map_err(|_| "Invalid UTF-8 sequence".to_string())
+            .and_then(|s| {
+              u8::from_str_radix(s, 16)
+                .map_err(|_| "Non-hexadecimal digit found".to_string())
+            })
+        })
+        .collect::<Result<Vec<u8>, String>>()?,
       flags: 0,
       name: file_path.to_string(),
     };
@@ -225,7 +233,7 @@ mod tests {
   fn test_entry_creation() {
     let index_service = IndexServiceImpl::new();
 
-    let entry = index_service.create_entry_from_file("test-key", TEST_INDEX);
+    let entry = index_service.create_entry_from_file("010203", TEST_INDEX);
 
     info!("{:?}", entry);
     assert_eq!(entry.is_ok(), true);
@@ -235,7 +243,7 @@ mod tests {
   #[test]
   fn test_entry_save() {
     let mut index_service = IndexServiceImpl::new();
-    let entry = index_service.create_entry_from_file("test-key", TEST_INDEX);
+    let entry = index_service.create_entry_from_file("010203", TEST_INDEX);
     index_service.save_entry(entry.unwrap());
 
     assert_eq!(index_service.get_index().entries_count, 1);

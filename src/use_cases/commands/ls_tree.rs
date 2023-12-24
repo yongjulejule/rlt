@@ -22,6 +22,14 @@ pub struct LsTree<'a> {
   options: LsTreeOptions,
 }
 
+#[derive(Debug)]
+pub struct LsTreeResult {
+  pub object_type: String,
+  pub mode: String,
+  pub hash: String,
+  pub name: String,
+}
+
 const MAX_DEPTH: usize = 42;
 const MODE_TREE: &str = "040000";
 const ITEM_TYPE_TREE: &str = "tree";
@@ -41,7 +49,7 @@ impl<'a> LsTree<'a> {
     };
   }
 
-  pub fn run(&self) -> Result<String, String> {
+  pub fn run(&self) -> Result<Vec<LsTreeResult>, String> {
     trace!("LsTree: {:?}", self.options);
 
     let raw_hash =
@@ -67,9 +75,8 @@ impl<'a> LsTree<'a> {
 
     let paths = BTreeSet::from_iter(self.options.path.clone());
 
-    let result = self
-      .list_tree(None, &tree.entries, &paths, self.options.recurse, 0)?
-      .concat();
+    let result =
+      self.list_tree(None, &tree.entries, &paths, self.options.recurse, 0)?;
     trace!("result: {:?}", result);
     Ok(result)
   }
@@ -81,42 +88,45 @@ impl<'a> LsTree<'a> {
     paths: &BTreeSet<String>,
     recurse: bool,
     depth: usize,
-  ) -> Result<Vec<String>, String> {
+  ) -> Result<Vec<LsTreeResult>, String> {
     if depth > MAX_DEPTH {
       return Err(format!("Max depth exceeded in tree: {}", MAX_DEPTH));
     }
-    entries
-      .iter()
-      .filter(|entry| {
-        // NOTE: path arguments not supported in recursive mode
-        recurse || paths.is_empty() || paths.contains(&entry.name)
-      })
-      .map(|entry| {
-        let full_name = parent_directory
-          .map(|dir| format!("{}/{}", dir, entry.name))
-          .unwrap_or_else(|| entry.name.clone());
-        let (object_type, object_mode) = determine_type(entry.mode.as_str())?;
 
-        match (object_type, recurse) {
-          (ITEM_TYPE_TREE, true) => {
-            let raw_object = self.object_service.find(&entry.hash)?;
-            let subtree = TreeObject::parse(&entry.hash, &raw_object.data)?;
-            self.list_tree(
-              Some(&full_name),
-              &subtree.entries,
-              paths,
-              recurse,
-              depth + 1,
-            )
-          }
-          _ => Ok(vec![format!(
-            "{} {} {}\t{}\n",
-            object_mode, object_type, entry.hash, full_name
-          )]),
-        }
-      })
-      .collect::<Result<Vec<_>, _>>()
-      .map(|lines| lines.concat())
+    let mut results = Vec::new();
+
+    for entry in entries {
+      if !(recurse || paths.is_empty() || paths.contains(&entry.name)) {
+        continue;
+      }
+
+      let full_name = parent_directory
+        .map(|dir| format!("{}/{}", dir, entry.name))
+        .unwrap_or_else(|| entry.name.clone());
+
+      let (object_type, object_mode) = determine_type(entry.mode.as_str())?;
+
+      if object_type == ITEM_TYPE_TREE && recurse {
+        let raw_object = self.object_service.find(&entry.hash)?;
+        let subtree = TreeObject::parse(&entry.hash, &raw_object.data)?;
+        results.extend(self.list_tree(
+          Some(&full_name),
+          &subtree.entries,
+          paths,
+          recurse,
+          depth + 1,
+        )?);
+      } else {
+        results.push(LsTreeResult {
+          object_type: object_type.to_string(),
+          mode: object_mode.to_string(),
+          hash: entry.hash.clone(),
+          name: full_name,
+        });
+      }
+    }
+
+    Ok(results)
   }
 }
 

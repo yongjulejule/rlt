@@ -39,6 +39,7 @@ Let's implement the git command to learn the internals of git..
 - [ ] `git add`
 - [ ] `git commit`
 - [ ] `git status`
+  - [x] without options
 - [ ] `git log`
   - [x] without support for packed-refs
 - [ ] `git diff`

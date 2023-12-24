@@ -16,6 +16,7 @@ use crate::{
       log::{Log, LogOptions},
       ls_files::LsFiles,
       ls_tree::{LsTree, LsTreeOptions},
+      status::Status,
     },
     core::{
       ignore_service::IgnoreServiceImpl, object_service::ObjectServiceImpl,
@@ -82,8 +83,10 @@ impl CommandExecutor {
     let object_manager = ObjectManagerImpl::new(store.as_ref());
     let object_service =
       ObjectServiceImpl::new(&object_manager, hasher.as_ref());
-    let ignore_raw = provider.get_contents(".gitignore".to_string());
-    let ignore_service = IgnoreServiceImpl::from_raw(&ignore_raw.as_bytes())?;
+    let ignore_raw = provider
+      .get_contents(".gitignore".to_string())
+      .unwrap_or_else(|_| b"".to_vec());
+    let ignore_service = IgnoreServiceImpl::from_raw(&ignore_raw)?;
     let revision_service = RevisionServiceImpl::new(store.as_ref());
 
     trace!("command: {:?}", command);
@@ -120,7 +123,7 @@ impl CommandExecutor {
 
       Commands::LsFiles {} => {
         let result = LsFiles::new(store.as_ref()).run();
-        trace!("{}", result.ok().unwrap().join("\n"));
+        println!("{}", result.ok().unwrap().join("\n"));
         Ok(())
       }
 
@@ -161,8 +164,47 @@ impl CommandExecutor {
         let result =
           LsTree::new(&object_service, &revision_service, ls_tree_options)
             .run()?;
+        result.iter().for_each(|r| {
+          println!("{} {} {}\t{}\n", r.object_type, r.mode, r.hash, r.name)
+        });
+        Ok(())
+      }
 
-        println!("{}", result);
+      Commands::Status {} => {
+        trace!("Status");
+        let result = Status::new(
+          store.as_ref(),
+          provider.as_ref(),
+          &ignore_service,
+          &object_service,
+          &revision_service,
+        )
+        .run()?;
+
+        println!("Result for status 👋 \n");
+        let printer = &|(status, path): &(String, String)| {
+          let red = "\x1b[31m";
+          let green = "\x1b[32m";
+          let reset = "\x1b[0m";
+          match status.as_str() {
+            "deleted" => println!("💩 {}\t{}: {}{}", red, status, path, reset),
+            "modified" => {
+              println!("🪄 {}\t{}: {}{}", green, status, path, reset)
+            }
+            "new file" => {
+              println!("✨ {}\t{}: {}{}", green, status, path, reset)
+            }
+            _ => {}
+          }
+        };
+        println!("Changes to be committed 💌 :");
+        result.staged.iter().for_each(printer);
+        println!("Changes not staged for commit 💤 :");
+        result.unstaged.iter().for_each(printer);
+        println!("Untracked files 👽 :");
+        result.untracked.iter().for_each(|path| {
+          println!("\t{}:\t{}\n", "new file", path);
+        });
         Ok(())
       }
 
