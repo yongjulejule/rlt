@@ -54,12 +54,20 @@ pub enum Commands {
     #[arg(value_name = "object")]
     object: String,
   },
+
+  #[command(about = "List the files in the index")]
   LsFiles {},
+
+  #[command(about = "Check is the file is ignored")]
   CheckIgnore {
     #[arg(value_name = "paths")]
     paths: Vec<String>,
   },
+
+  #[command(about = "Show commit logs")]
   Log(LogArgs),
+
+  #[command(about = "List the contents of a tree object")]
   LsTree(LsTreeArgs),
   /// Clones repos
   #[command(arg_required_else_help = true)]

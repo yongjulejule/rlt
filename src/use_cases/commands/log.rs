@@ -1,6 +1,6 @@
 use crate::use_cases::core::{
   commit_visitor::FormatCommitVisitor,
-  revision_service::{self, RevisionService},
+  revision_service::{RevisionService},
 };
 use log::trace;
 
